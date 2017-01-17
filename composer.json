@@ -2,7 +2,7 @@
     "name" : "tiorafa/sparky7",
     "description": "My take on a PHP7 framework",
     "type": "library",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "license": "MIT",
     "autoload" : {
         "psr-4" : {

@@ -67,9 +67,9 @@ abstract class Collection implements OuterIterator
     {
         // Select Query Builder
         if (get_class($this->MongoDB) === 'MongoDB\Database') {
-            $this->QB = new qb\MongoDB($this->MongoDB, $this->collection);
+            $this->QB = new Qb\MongoDB($this->MongoDB, $this->collection);
         } elseif (get_class($this->MongoDB) === 'MongoDB') {
-            $this->QB = new qb\Mongo($this->MongoDB, $this->collection);
+            $this->QB = new Qb\Mongo($this->MongoDB, $this->collection);
         } else {
             throw new Exception('Invalid mongo database');
         }
