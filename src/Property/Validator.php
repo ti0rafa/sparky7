@@ -1,0 +1,68 @@
+<?php
+
+namespace Sparky7\Property;
+
+/**
+ * Validator wrapper.
+ */
+class Validator
+{
+    /**
+     * Create class namespace.
+     *
+     * @param string $class Class name
+     *
+     * @return string Namespace
+     */
+    final private static function getNameSpace($class)
+    {
+        return '\\Sparky7\\Property\\Rule\\Ru'.$class;
+    }
+
+    /**
+     * Export a value.
+     *
+     * @param string $type  Property type
+     * @param any    $value Property value
+     *
+     * @return any Property value
+     */
+    final public static function export($type, $value)
+    {
+        $namespace = self::getNameSpace($type);
+
+        return $namespace::export($value);
+    }
+
+    /**
+     * Santize a value.
+     *
+     * @param string $type  Property type
+     * @param any    $value Property value
+     *
+     * @return any Property value
+     */
+    final public static function sanitize($type, $value)
+    {
+        $namespace = self::getNameSpace($type);
+
+        return $namespace::sanitize($value);
+    }
+
+    /**
+     * Validate a value.
+     *
+     * @param string $type     Property type
+     * @param any    $value    Property value
+     * @param any    $required Is required
+     * @param any    $default  Property default value
+     *
+     * @return any Property value
+     */
+    final public static function validate($type, $value, $required = false, $default = null)
+    {
+        $namespace = self::getNameSpace($type);
+
+        return $namespace::validate($value, $required, $default);
+    }
+}
