@@ -3,6 +3,7 @@
     "description": "My take on a PHP7 framework",
     "type": "library",
     "version": "0.0.1",
+    "license": "Apache 2.0",
     "config": {
         "optimize-autoloader" : true,
         "vendor-dir" : "composer/"
