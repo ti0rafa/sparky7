@@ -1,6 +1,6 @@
 <?php
 
-namespace Sparky7\Logger\notify;
+namespace Sparky7\Logger\Notify;
 
 use Sparky7\Helper\CLI;
 use Sparky7\Logger\LoggerNotify;
