@@ -39,9 +39,9 @@ abstract class Entity
 
         // Select Entity
         if (get_class($MongoCollection) === 'MongoDB\Collection') {
-            $this->ET = new et\MongoDB($MongoCollection);
+            $this->ET = new Et\MongoDB($MongoCollection);
         } elseif (get_class($MongoCollection) === 'MongoCollection') {
-            $this->ET = new et\Mongo($MongoCollection);
+            $this->ET = new Et\Mongo($MongoCollection);
         } else {
             throw new Exception('Invalid mongo database');
         }
