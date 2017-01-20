@@ -1,5 +1,6 @@
 # Composer #
 composer/
+vendor/
 composer.lock
 
 # SublimeText #

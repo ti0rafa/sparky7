@@ -80,12 +80,11 @@ class APIResponse extends Response
     {
         $this->headers = [
             'Access-Control-Allow-Origin: *',
-            'Access-Control-Allow-Headers: Authorization, Content-Type, X-Requested-With',
-            'Access-Control-Allow-Methods: HEAD, POST, GET, DELETE, PUT',
+            'Access-Control-Allow-Headers: Authorization, Cache-Control, Content-Type, X-Requested-With',
+            'Access-Control-Allow-Methods: HEAD, POST, GET, DELETE, PUT, OPTIONS',
             'Access-Control-Max-Age: 86400',
-            'Cache-Control: max-age=0, no-store, no-cache',
-            'Cache-Control: post-check=0, pre-check=0',
-            'Content-type: application/json; charset=utf-8',
+            'Cache-Control: max-age=0, no-store, no-cache, post-check=0, pre-check=0',
+            'Content-Type: application/json; charset=utf-8',
             'Expires: Mon, 26 Jul 1997 05:00:00 GMT',
             'Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT',
             'Pragma: no-cache',
@@ -100,10 +99,12 @@ class APIResponse extends Response
 
     /**
      * Send Headers.
+     *
+     * @param array $overwrite_headers Overwrite headers
      */
     final public function sendHeaders()
     {
-        if (headers_sent() || !in_array((int) $this->code, [200, 203, 400, 401, 402, 403, 404, 500, 501, 503])) {
+        if (headers_sent() || !in_array((int) $this->code, [200, 203, 204, 400, 401, 402, 403, 404, 500, 501, 503])) {
             return;
         }
 

@@ -2,6 +2,7 @@
 
 namespace Sparky7\Api;
 
+use Sparky7\Api\Response\APIResponse;
 use Sparky7\Error\Exception\ExBadRequest;
 use Sparky7\Event\Emitter;
 use Closure;
@@ -67,14 +68,15 @@ class Router
                         'method' => [],
                         'children' => null,
                         'url' => $uri,
-                        ];
+                    ];
                 }
+
                 ${'cursor'.($key + 1)} = &${'cursor'.$key}[$value]['children'];
             } else {
                 ${'cursor'.$key}[$value]['method'][strtoupper($method)] = [
                     'closure' => $closure,
                     'uri' => $uri,
-                    ];
+                ];
             }
         }
 
@@ -99,6 +101,11 @@ class Router
         usort($match, function ($first, $second) {
             return ($first['w'] > $second['w']) ? -1 : 1;
         });
+
+        if (strtoupper($this->Request->method) === 'OPTIONS') {
+            return function () {
+            };
+        }
 
         foreach ($match as $key => $value) {
             foreach ($methods as $method) {
@@ -267,6 +274,15 @@ class Router
 
         $closure = $this->searchRoute();
 
+        // Preflight requests
+        if (strtoupper($this->Request->method) === 'OPTIONS' && is_callable($closure)) {
+            $APIResponse = new APIResponse();
+            $APIResponse->code = 204;
+            $APIResponse->sendHeaders();
+
+            exit(1);
+        }
+
         // If closure is not callable use the not found closure
         if (!is_callable($closure) && is_callable($this->not_found)) {
             $closure = $this->not_found;
@@ -277,14 +293,14 @@ class Router
             throw new ExBadRequest('Route not found');
         }
 
-        $Output = call_user_func_array($closure, [$this->Request]);
+        $Response = call_user_func_array($closure, [$this->Request]);
 
-        if ($Output instanceof Output) {
-            $this->emit('after.run', [$this->Request, $Output]);
+        if ($Response instanceof Response) {
+            $this->emit('after.run', [$this->Request, $Response]);
         }
 
-        $Output->sendHeaders();
-        echo $Output->format();
+        $Response->sendHeaders();
+        echo $Response->format();
 
         exit(1);
     }
