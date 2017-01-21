@@ -102,9 +102,9 @@ class Router
             return ($first['w'] > $second['w']) ? -1 : 1;
         });
 
+        // Preflight response on method Options
         if (strtoupper($this->Request->method) === 'OPTIONS') {
-            return function () {
-            };
+            return $this->preFlight();
         }
 
         foreach ($match as $key => $value) {
@@ -266,6 +266,22 @@ class Router
     }
 
     /**
+     * Pre flight response.
+     *
+     * @return APIResponse
+     */
+    final public function preFlight()
+    {
+        return function () {
+            $APIResponse = new APIResponse();
+            $APIResponse->code = 204;
+            $APIResponse->rid = $this->Request->rid;
+
+            return $APIResponse;
+        };
+    }
+
+    /**
      * Executes matching route with requested url, and tries to executes its callback.
      */
     final public function run()
@@ -273,15 +289,6 @@ class Router
         $this->emit('before.run', [$this->Request]);
 
         $closure = $this->searchRoute();
-
-        // Preflight requests
-        if (strtoupper($this->Request->method) === 'OPTIONS' && is_callable($closure)) {
-            $APIResponse = new APIResponse();
-            $APIResponse->code = 204;
-            $APIResponse->sendHeaders();
-
-            exit(1);
-        }
 
         // If closure is not callable use the not found closure
         if (!is_callable($closure) && is_callable($this->not_found)) {

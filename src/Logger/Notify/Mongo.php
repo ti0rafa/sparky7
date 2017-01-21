@@ -51,8 +51,6 @@ class Mongo extends LoggerNotify
                     'keyword' => (is_array($this->tags)) ? array_values($this->tags) : null,
                     'dt_modify' => MongoWrapper::date(),
                 ],
-            ], [
-                'multi' => true,
             ]);
         } else {
             $_id = MongoWrapper::id();
