@@ -86,24 +86,26 @@ class Scheduler
 
         // Run each cron
         foreach ($files as $key => $value) {
-            if (is_file($this->default_path.DIRECTORY_SEPARATOR.$value['file'])) {
-                set_time_limit($value['timeout']);
-
-                $Timer = new Timer();
-                $Timer->start();
-
-                $this->emit('before.run', [$value['file']]);
-
-                require_once $this->default_path.DIRECTORY_SEPARATOR.$value['file'];
-
-                $elapsed = $Timer->elapsed();
-
-                $this->emit('after.run', [
-                    $elapsed,
-                    Memory::usage(true),
-                    Memory::usage(false),
-                ]);
+            if (!is_file($this->default_path.DIRECTORY_SEPARATOR.$value['file'])) {
+                continue;
             }
+
+            set_time_limit($value['timeout']);
+
+            $Timer = new Timer();
+            $Timer->start();
+
+            $this->emit('before.run', [$value['file']]);
+
+            require_once $this->default_path.DIRECTORY_SEPARATOR.$value['file'];
+
+            $elapsed = $Timer->elapsed();
+
+            $this->emit('after.run', [
+                $elapsed,
+                Memory::usage(true),
+                Memory::usage(false),
+            ]);
         }
     }
 

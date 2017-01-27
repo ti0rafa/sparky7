@@ -52,17 +52,18 @@ class Validator
     /**
      * Validate a value.
      *
-     * @param string $type     Property type
-     * @param any    $value    Property value
-     * @param any    $required Is required
-     * @param any    $default  Property default value
+     * @param string $type        Property type
+     * @param any    $value       Property value
+     * @param any    $required    Is required
+     * @param any    $default     Property default value
+     * @param bool   $use_default Use default
      *
      * @return any Property value
      */
-    final public static function validate($type, $value, $required = false, $default = null)
+    final public static function validate($type, $value, $required = false, $default = null, $use_default = true)
     {
         $namespace = self::getNameSpace($type);
 
-        return $namespace::validate($value, $required, $default);
+        return $namespace::validate($value, $required, $default, $use_default);
     }
 }

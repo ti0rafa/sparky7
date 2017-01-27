@@ -103,7 +103,7 @@ class Router
         });
 
         // Preflight response on method Options
-        if (strtoupper($this->Request->method) === 'OPTIONS') {
+        if (in_array(strtoupper($this->Request->method), ['HEAD', 'OPTIONS'])) {
             return $this->preFlight();
         }
 

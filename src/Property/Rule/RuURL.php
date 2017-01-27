@@ -31,7 +31,7 @@ class RuURL
     /**
      * Validate.
      */
-    final public static function validate($value = null, $required = false, $default = null)
+    final public static function validate($value = null, $required = false, $default = null, $use_default = true)
     {
         $default = self::sanitize($default);
         $value = self::sanitize($value);
@@ -40,7 +40,7 @@ class RuURL
             throw new ExBadRequest('Invalid URL value');
         } elseif (is_null($value) && is_null($default)) {
             return;
-        } elseif (is_null($value)) {
+        } elseif (is_null($value) && $use_default) {
             return $default;
         } else {
             return $value;

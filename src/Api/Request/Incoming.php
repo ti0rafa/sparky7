@@ -1,6 +1,6 @@
 <?php
 
-namespace Sparky7\Api;
+namespace Sparky7\Api\Request;
 
 use Sparky7\Error\Exception\ExError;
 use Sparky7\Helper\Json;

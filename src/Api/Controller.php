@@ -159,13 +159,13 @@ abstract class Controller
          * Prepare Response
          */
 
-        $Output = null;
+        $Response = null;
 
         if (is_object($this->response) && $this->response instanceof Response) {
-            $Output = $this->response;
+            $Response = $this->response;
         }
 
-        if (is_null($Output)) {
+        if (is_null($Response)) {
             // If response is boolean, it sets the status to that value and returns null
             if (is_bool($this->response)) {
                 $status = (bool) $this->response;
@@ -173,16 +173,16 @@ abstract class Controller
                 $status = true;
             }
 
-            $Output = new APIResponse();
-            $Output->rid = $this->Request->rid;
-            $Output->status = $status;
-            $Output->code = 200;
-            $Output->response = $this->response;
-            $Output->pretty = $this->Request->isParam('pretty'); // If pretty param is set parse the JSON output
+            $Response = new APIResponse();
+            $Response->rid = $this->Request->rid;
+            $Response->status = $status;
+            $Response->code = 200;
+            $Response->response = $this->response;
+            $Response->pretty = $this->Request->isParam('pretty'); // If pretty param is set parse the JSON output
         }
 
         $this->emit('after.exec');
 
-        return $Output;
+        return $Response;
     }
 }

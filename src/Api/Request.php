@@ -3,6 +3,9 @@
 namespace Sparky7\Api;
 
 use Ramsey\Uuid\Uuid;
+use Sparky7\Request\Headers;
+use Sparky7\Request\Incoming;
+use Sparky7\Request\Ip;
 
 /**
  * Request class, gets its method, uri and params.
@@ -14,8 +17,9 @@ class Request
     private $headers;
     private $method;
     private $parameters;
-    private $uri;
+    private $remote_ip;
     private $server;
+    private $uri;
 
     /**
      * Constructor.
@@ -28,12 +32,7 @@ class Request
          * Grab incoming headers
          */
 
-        $this->headers = [];
-        foreach ($_SERVER as $name => $value) {
-            if (substr($name, 0, 5) == 'HTTP_') {
-                $this->headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
-            }
-        }
+        $this->headers = Headers::detect();
 
         /*
          * Grab server
@@ -58,6 +57,12 @@ class Request
 
         $this->uri = parse_url(filter_var($_SERVER['REQUEST_URI'], FILTER_SANITIZE_URL));
         $this->uri = preg_split('[\\/]', $this->uri['path'], -1, PREG_SPLIT_NO_EMPTY);
+
+        /*
+         * IP address
+         */
+
+        $this->remote_ip = IP::detect();
 
         /*
          * Request method (overwrite if requested)
@@ -121,7 +126,7 @@ class Request
      */
     final public function isAjax()
     {
-        if (strpos(strtolower($_SERVER['CONTENT_TYPE']), 'application/json') !== false) {
+        if (strpos(strtolower($this->content_type), 'application/json') !== false) {
             return true;
         }
 

@@ -95,7 +95,7 @@ class Parameter
      */
     final public function validate()
     {
-        $this->value = Validator::validate($this->type, $this->value, $this->required, $this->default);
+        $this->value = Validator::validate($this->type, $this->value, $this->required, $this->default, true);
 
         return $this;
     }
