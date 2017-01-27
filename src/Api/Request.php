@@ -3,9 +3,9 @@
 namespace Sparky7\Api;
 
 use Ramsey\Uuid\Uuid;
-use Sparky7\Request\Headers;
-use Sparky7\Request\Incoming;
-use Sparky7\Request\Ip;
+use Sparky7\Api\Request\Headers;
+use Sparky7\Api\Request\Incoming;
+use Sparky7\Api\Request\Ip;
 
 /**
  * Request class, gets its method, uri and params.
