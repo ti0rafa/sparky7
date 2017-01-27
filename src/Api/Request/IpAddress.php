@@ -5,7 +5,7 @@ namespace Sparky7\Api\Request;
 /**
  * Request IP Address.
  */
-class IP
+class IpAddress
 {
     /**
      * Detect remote ip address.

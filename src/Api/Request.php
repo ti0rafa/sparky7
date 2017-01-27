@@ -5,7 +5,7 @@ namespace Sparky7\Api;
 use Ramsey\Uuid\Uuid;
 use Sparky7\Api\Request\Headers;
 use Sparky7\Api\Request\Incoming;
-use Sparky7\Api\Request\Ip;
+use Sparky7\Api\Request\IpAddress;
 
 /**
  * Request class, gets its method, uri and params.
@@ -62,7 +62,7 @@ class Request
          * IP address
          */
 
-        $this->remote_ip = IP::detect();
+        $this->remote_ip = IpAddress::detect();
 
         /*
          * Request method (overwrite if requested)
