@@ -4,7 +4,7 @@ namespace Sparky7\Orm\Qb;
 
 use Sparky7\Api\Parameter;
 use Sparky7\Event\Emitter;
-use Sparky7\Orm\ORMException;
+use Sparky7\Orm\OrmException;
 use Exception;
 use IteratorIterator;
 use MongoDate;
@@ -56,7 +56,7 @@ class MongoDB
         try {
             $result = $this->MongoCollection->aggregate($pipeline);
         } catch (Exception $Exception) {
-            throw new ORMException($Exception->getMessage(), $Exception->getCode(), [
+            throw new OrmException($Exception->getMessage(), $Exception->getCode(), [
                 'method' => __METHOD__,
                 'collection' => $this->collection,
                 'pipeline' => $pipeline,
@@ -98,7 +98,7 @@ class MongoDB
         try {
             $result = $this->MongoCollection->count($query, $options);
         } catch (Exception $Exception) {
-            throw new ORMException($Exception->getMessage(), $Exception->getCode(), [
+            throw new OrmException($Exception->getMessage(), $Exception->getCode(), [
                 'method' => __METHOD__,
                 'collection' => $this->collection,
                 'query' => $query,
@@ -147,7 +147,7 @@ class MongoDB
                 $options
                 );
         } catch (Exception $Exception) {
-            throw new ORMException($Exception->getMessage(), $Exception->getCode(), [
+            throw new OrmException($Exception->getMessage(), $Exception->getCode(), [
                 'method' => __METHOD__,
                 'collection' => $this->collection,
                 'select' => $projection,
@@ -208,7 +208,7 @@ class MongoDB
 
             return $IteratorIterator;
         } catch (Exception $Exception) {
-            throw new ORMException($Exception->getMessage(), $Exception->getCode(), [
+            throw new OrmException($Exception->getMessage(), $Exception->getCode(), [
                 'method' => __METHOD__,
                 'collection' => $this->collection,
                 'limit' => $this->limit,
@@ -784,7 +784,7 @@ class MongoDB
         try {
             $this->MongoCollection->deleteMany($query);
         } catch (Exception $Exception) {
-            throw new ORMException($Exception->getMessage(), $Exception->getCode(), [
+            throw new OrmException($Exception->getMessage(), $Exception->getCode(), [
                 'method' => __METHOD__,
                 'collection' => $this->collection,
                 'where' => $query,
