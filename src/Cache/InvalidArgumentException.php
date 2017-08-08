@@ -1,6 +1,6 @@
 <?php
 
-namespace pbk\cache;
+namespace Sparky7\Cache;
 
 use Exception;
 

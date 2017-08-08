@@ -1,6 +1,6 @@
 <?php
 
-namespace pbk\cache\it;
+namespace Sparky7\Cache\It;
 
 use Psr\SimpleCache\CacheInterface;
 use Redis;

@@ -2,10 +2,9 @@
 
 namespace Sparky7\Worker\Protocol;
 
-use pbk\worker\Protocol;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
-use AMQPChannel;
+use Sparky7\Worker\Protocol;
 use Closure;
 
 /**

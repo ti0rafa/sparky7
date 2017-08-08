@@ -2,7 +2,7 @@
 
 namespace Sparky7\Orm;
 
-use pbk\event\Emitter;
+use Sparky7\Event\Emitter;
 use MongoGridFS;
 use MongoId;
 

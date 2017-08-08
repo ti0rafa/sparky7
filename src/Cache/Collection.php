@@ -1,10 +1,9 @@
 <?php
 
-namespace pbk\cache;
+namespace Sparky7\Cache;
 
-use Psr\SimpleCache\CacheInterface;
-use pbk\cache\it\ItRedis;
-use pbk\event\Emitter;
+use Sparky7\Cache\It\ItRedis;
+use Sparky7\Event\Emitter;
 
 /**
  * Persistance cache class.

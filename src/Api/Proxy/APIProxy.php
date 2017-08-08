@@ -1,9 +1,9 @@
 <?php
 
-namespace pbk\api\proxy;
+namespace Sparky7\Api\Proxy;
 
-use pbk\api\response\APIResponse;
-use pbk\helper\Json;
+use Sparky7\Api\Response\APIResponse;
+use Sparky7\Helper\Json;
 use Exception;
 
 /**

@@ -2,7 +2,7 @@
 
 namespace Sparky7\Worker\Protocol;
 
-use pbk\worker\Protocol;
+use Sparky7\Worker\Protocol;
 use AMQPConnection;
 use AMQPChannel;
 use AMQPExchange;
