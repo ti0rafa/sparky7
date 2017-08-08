@@ -26,7 +26,6 @@ abstract class Entity
     private $is_valid;
     private $data;
     private $method;
-    private $mapper;
 
     /**
      * Constructor.
