@@ -259,6 +259,10 @@ class APIProxy
         ];
 
         $this->call['headers'][] = 'Content-Type: '.$this->call['content_type'];
+        $this->call['headers']['X-Forwarded-For'] = RemoteAddress::ip();
+        if (!is_null($rid)) {
+            $this->call['headers']['X-Requested-ID'] = $rid;
+        }
         $this->call['headers'][] = 'X-Requested-With: XMLHttpRequest';
 
         foreach ($forward_headers as $expected => $header) {

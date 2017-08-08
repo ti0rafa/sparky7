@@ -1,10 +1,10 @@
 <?php
 
-namespace Sparky7\Cache;
+namespace pbk\cache;
 
-use Sparky7\Event\Emitter;
-use Exception;
-use Redis;
+use Psr\SimpleCache\CacheInterface;
+use pbk\cache\it\ItRedis;
+use pbk\event\Emitter;
 
 /**
  * Persistance cache class.
@@ -13,29 +13,53 @@ abstract class Collection
 {
     use Emitter;
 
-    private $Redis;
+    private $CacheInterface;
 
-    private $name;
-    private $timeout;
-
-    protected $row;
+    private $algorithm;
+    private $prefix;
+    private $ttl;
 
     /**
      * Construct method.
      */
-    public function __construct(Redis $Redis, $name, $timeout = 1800)
+    public function __construct($Service, $prefix, $default_ttl = 1800, $default_algorithm = 'md5')
     {
-        $this->Redis = $Redis;
+        /*
+         * Validate parameters
+         */
 
-        $this->name = $name;
-        $this->timeout = $timeout;
-
-        // Select db
-        if (is_null($this->name)) {
-            throw new Exception('Undefined name in '.__CLASS__);
+        if (strlen($prefix) === 0) {
+            throw new InvalidArgumentException('Prefix is missing');
         }
 
-        // Register events
+        if (!is_int($default_ttl)) {
+            throw new InvalidArgumentException('Time to live must be an integer');
+        }
+
+        /*
+         * Detect cache interface
+         */
+
+        switch (get_class($Service)) {
+            case 'Redis':
+                $this->CacheInterface = new ItRedis($Service, $default_ttl);
+                break;
+            default:
+                throw new InvalidArgumentException('Invalid Cache Interface');
+                break;
+        }
+
+        /*
+         * Set default values
+         */
+
+        $this->algorithm = $default_algorithm;
+        $this->prefix = $prefix;
+
+        /*
+         * Register events
+         */
+
         foreach ($this->events() as $key => $value) {
             $this->on($key, $value);
         }
@@ -50,21 +74,7 @@ abstract class Collection
      */
     public function __get($key)
     {
-        if (is_object($key) && (is_a($key, 'MongoId') || is_a($key, 'MongoDB\BSON\ObjectID'))) {
-            $key = (string) $key;
-        }
-
-        if (!$this->exists($key)) {
-            $this->emit('before.get', ['_id' => $key]);
-        }
-
-        if (!$this->exists($key)) {
-            return;
-        }
-
-        $this->Redis->expire($this->name.':'.$key, $this->timeout);
-
-        return json_decode($this->Redis->get($this->name.':'.$key));
+        return $this->get($key, null);
     }
 
     /**
@@ -72,22 +82,29 @@ abstract class Collection
      *
      * @return any Value
      */
-    public function get()
+    public function get($key, $default = null)
     {
-        $key = hash('sha256', json_encode(func_get_args()));
-        $args = array_merge([$key], func_get_args());
-
-        if (!$this->exists($key)) {
-            $this->emit('before.get', $args);
+        if (!$this->has($key)) {
+            $this->emit('before.get', [$key]);
         }
 
-        if (!$this->exists($key)) {
-            return;
+        return json_decode($this->CacheInterface->get($this->key($key, $default)));
+    }
+
+    /**
+     * Create a custom key.
+     *
+     * @param string $key Key
+     *
+     * @return string Hash Key
+     */
+    final public function key($key)
+    {
+        if (is_object($key) && (get_class($key) === 'MongoId' || get_class($key) === 'MongoDB\BSON\ObjectID')) {
+            $key = (string) $key;
         }
 
-        $this->Redis->expire($this->name.':'.$key, $this->timeout);
-
-        return json_decode($this->Redis->get($this->name.':'.$key));
+        return $this->prefix.':'.hash($this->algorithm, $key);
     }
 
     /**
@@ -95,9 +112,9 @@ abstract class Collection
      *
      * @param string $key Property name
      */
-    public function setKeyValue($key, $value)
+    public function set($key, array $value, $ttl = null)
     {
-        $this->Redis->setEx($this->name.':'.$key, $this->timeout, json_encode($value));
+        return $this->CacheInterface->set($this->key($key), json_encode($value), $ttl);
     }
 
     /**
@@ -105,9 +122,9 @@ abstract class Collection
      *
      * @param string $key Property name
      */
-    public function removeKey($key)
+    public function delete($key)
     {
-        $this->Redis->delete($this->name.':'.$key);
+        return $this->CacheInterface->delete($this->key($key));
     }
 
     /**
@@ -117,12 +134,8 @@ abstract class Collection
      *
      * @return bool
      */
-    final public function exists($key)
+    final public function has($key)
     {
-        if (is_object($key) && (get_class($key) === 'MongoId' || get_class($key) === 'MongoDB\BSON\ObjectID')) {
-            $key = (string) $key;
-        }
-
-        return $this->Redis->exists($this->name.':'.$key);
+        return $this->CacheInterface->has($this->key($key));
     }
 }
