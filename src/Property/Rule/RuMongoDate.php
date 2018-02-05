@@ -2,8 +2,9 @@
 
 namespace Sparky7\Property\Rule;
 
-use Sparky7\Error\Exception\ExBadRequest;
+use DateTime;
 use MongoDB\BSON\UTCDateTime;
+use Sparky7\Error\Exception\ExBadRequest;
 
 /**
  * MongoDate rule.
@@ -27,6 +28,8 @@ class RuMongoDate
     {
         if ($value instanceof UTCDateTime) {
             return $value;
+        } elseif ($value instanceof DateTime) {
+            return new UTCDateTime((int) $value->format('Uv'));
         } elseif (is_array($value) && isset($value['sec'])) {
             return new UTCDateTime((int) $value['sec']);
         } elseif (is_object($value) && isset($value->sec)) {
