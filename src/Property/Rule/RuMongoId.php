@@ -2,8 +2,8 @@
 
 namespace Sparky7\Property\Rule;
 
-use Sparky7\Error\Exception\ExBadRequest;
 use Exception;
+use Sparky7\Error\Exception\ExBadRequest;
 
 /**
  * MongoId rule.
@@ -33,7 +33,7 @@ class RuMongoId
             } catch (Exception $Exception) {
                 return;
             }
-        } elseif (is_object($value) && (get_class($value) === 'MongoId' || get_class($value) === 'MongoDB\BSON\ObjectID')) {
+        } elseif (is_object($value) && ('MongoId' === get_class($value) || 'MongoDB\BSON\ObjectID' === get_class($value))) {
             return $value;
         } else {
             return;
