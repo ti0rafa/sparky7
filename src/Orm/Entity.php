@@ -3,6 +3,7 @@
 namespace Sparky7\Orm;
 
 use Sparky7\Api\Parameter;
+use Sparky7\Error\Exception\ExBadRequest;
 use Sparky7\Event\Emitter;
 use Exception;
 
@@ -37,9 +38,9 @@ abstract class Entity
          */
 
         // Select Entity
-        if (get_class($MongoCollection) === 'MongoDB\Collection') {
+        if ('MongoDB\Collection' === get_class($MongoCollection)) {
             $this->ET = new Et\MongoDB($MongoCollection);
-        } elseif (get_class($MongoCollection) === 'MongoCollection') {
+        } elseif ('MongoCollection' === get_class($MongoCollection)) {
             $this->ET = new Et\Mongo($MongoCollection);
         } else {
             throw new Exception('Invalid mongo database');
@@ -103,7 +104,7 @@ abstract class Entity
         }
 
         if ($value instanceof Parameter) {
-            if ($value->method === 'unset') {
+            if ('unset' === $value->method) {
                 return;
             }
 
@@ -130,7 +131,7 @@ abstract class Entity
          * Dont set value if previous method was set on an event
          */
 
-        if ($this->data[$name]->method !== 'event') {
+        if ('event' !== $this->data[$name]->method) {
             $this->set($name, $value, 'set');
         }
     }
@@ -183,9 +184,9 @@ abstract class Entity
      *
      * @param array|null $data Property values
      */
-    final private function reset(array $data = [])
+    private function reset(array $data = [])
     {
-        $this->is_valid = (count($data) === 0) ? false : true;
+        $this->is_valid = (0 === count($data)) ? false : true;
 
         /*
          * Create data
@@ -257,7 +258,7 @@ abstract class Entity
 
         $row = [];
         foreach ($this->data as $name => $Property) {
-            if ($name === '_id' && in_array($Property->type, ['ID', 'MongoId'])) {
+            if ('_id' === $name && in_array($Property->type, ['ID', 'MongoId'])) {
                 if (is_null($Property->value)) {
                     $Property->set(Mongo::id(), 'set');
                 }
@@ -266,7 +267,7 @@ abstract class Entity
             try {
                 $Property->validate();
             } catch (Exception $Exception) {
-                throw new Exception($Exception->getMessage().': '.$name.' in '.get_class($this));
+                throw new ExBadRequest($Exception->getMessage().': '.$name.' in '.get_class($this));
             }
 
             $row[$name] = $Property->value;
@@ -316,7 +317,7 @@ abstract class Entity
             try {
                 $Property->validate();
             } catch (Exception $Exception) {
-                throw new Exception($Exception->getMessage().': '.$name.' in '.get_class($this));
+                throw new ExBadRequest($Exception->getMessage().': '.$name.' in '.get_class($this));
             }
 
             $row[$name] = $Property->value;
