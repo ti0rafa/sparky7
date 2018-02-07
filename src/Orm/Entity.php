@@ -2,10 +2,10 @@
 
 namespace Sparky7\Orm;
 
+use Exception;
 use Sparky7\Api\Parameter;
 use Sparky7\Error\Exception\ExBadRequest;
 use Sparky7\Event\Emitter;
-use Exception;
 
 /**
  * Entity Class.
