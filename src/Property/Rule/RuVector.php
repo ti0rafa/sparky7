@@ -38,8 +38,8 @@ class RuVector
         $default = self::sanitize($default);
         $value = self::sanitize($value);
 
-        $default = (is_array($default) && count($default) > 0) ? $default : null;
-        $value = (is_array($value) && count($value) > 0) ? $value : null;
+        $default = (is_array($default) && !empty($default)) ? $default : null;
+        $value = (is_array($value) && !empty($value)) ? $value : null;
 
         if (is_null($value) && is_null($default) && $required) {
             throw new ExBadRequest('Invalid vector value');

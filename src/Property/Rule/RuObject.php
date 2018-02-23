@@ -33,8 +33,8 @@ class RuObject
         $default = self::sanitize($default);
         $value = self::sanitize($value);
 
-        $default = (is_object($default) && count($default) > 0) ? $default : null;
-        $value = (is_object($value) && count($value) > 0) ? $value : null;
+        $default = (is_object($default) && !empty((array) $default)) ? $default : null;
+        $value = (is_object($value) && !empty((array) $value)) ? $value : null;
 
         if (is_null($value) && is_null($default) && $required) {
             throw new ExBadRequest('Invalid object value');
