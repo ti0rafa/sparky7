@@ -62,12 +62,12 @@ class RuVector
     final public static function vectorify($data)
     {
         if (!is_array($data) || 0 === count((array) $data)) {
-            return;
+            return $data;
         }
 
         if (is_object($data) && 'stdClass' === get_class($data)) {
             foreach ($data as $key => $value) {
-                $data->$key = self::vectorify($value);
+                $data->{$key} = self::vectorify($value);
             }
         } elseif (is_array($data)) {
             if (array_key_exists(0, $data)) {
@@ -77,7 +77,7 @@ class RuVector
             } else {
                 $obj = new stdClass();
                 foreach ($data as $key => $value) {
-                    $obj->$key = self::vectorify($value);
+                    $obj->{$key} = self::vectorify($value);
                 }
 
                 return $obj;
