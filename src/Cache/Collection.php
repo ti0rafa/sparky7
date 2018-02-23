@@ -27,7 +27,7 @@ abstract class Collection
          * Validate parameters
          */
 
-        if (strlen($prefix) === 0) {
+        if (0 === strlen($prefix)) {
             throw new InvalidArgumentException('Prefix is missing');
         }
 
@@ -99,7 +99,7 @@ abstract class Collection
      */
     final public function key($key)
     {
-        if (is_object($key) && (get_class($key) === 'MongoId' || get_class($key) === 'MongoDB\BSON\ObjectID')) {
+        if (is_object($key) && ('MongoId' === get_class($key) || 'MongoDB\BSON\ObjectId' === get_class($key))) {
             $key = (string) $key;
         }
 

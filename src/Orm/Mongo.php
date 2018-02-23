@@ -17,7 +17,7 @@ class Mongo
     {
         try {
             if (extension_loaded('mongodb')) {
-                return new \MongoDB\BSON\ObjectID($id);
+                return new \MongoDB\BSON\ObjectId($id);
             } elseif (extension_loaded('mongo')) {
                 return new \MongoId($id);
             }

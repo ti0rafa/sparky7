@@ -30,14 +30,14 @@ class RuMongoIdInArray
             if (is_string($value) && strlen($value) > 0) {
                 try {
                     if (extension_loaded('mongodb')) {
-                        $data[] = new \MongoDB\BSON\ObjectID($value);
+                        $data[] = new \MongoDB\BSON\ObjectId($value);
                     } elseif (extension_loaded('mongo')) {
                         $data[] = new \MongoID($value);
                     }
                 } catch (Exception $Exception) {
                     continue;
                 }
-            } elseif (is_object($value) && (get_class($value) === 'MongoId' || get_class($value) === 'MongoDB\BSON\ObjectID')) {
+            } elseif (is_object($value) && ('MongoId' === get_class($value) || 'MongoDB\BSON\ObjectId' === get_class($value))) {
                 $data[] = $value;
             } else {
                 continue;

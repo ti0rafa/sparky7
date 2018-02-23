@@ -3,6 +3,7 @@
 namespace Sparky7\Property\Rule;
 
 use Exception;
+use MongoDB\BSON\ObjectId;
 use Sparky7\Error\Exception\ExBadRequest;
 
 /**
@@ -23,17 +24,13 @@ class RuMongoId
      */
     final public static function sanitize($value)
     {
-        if (is_string($value) && strlen($value) > 0) {
+        if (is_string($value) && mb_strlen($value) > 0) {
             try {
-                if (extension_loaded('mongodb')) {
-                    return new \MongoDB\BSON\ObjectID($value);
-                } elseif (extension_loaded('mongo')) {
-                    return new \MongoID($value);
-                }
+                return new ObjectID($value);
             } catch (Exception $Exception) {
                 return;
             }
-        } elseif (is_object($value) && ('MongoId' === get_class($value) || 'MongoDB\BSON\ObjectID' === get_class($value))) {
+        } elseif (is_object($value) && 'MongoDB\BSON\ObjectId' === get_class($value)) {
             return $value;
         } else {
             return;
