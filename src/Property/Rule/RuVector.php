@@ -38,8 +38,8 @@ class RuVector
         $default = self::sanitize($default);
         $value = self::sanitize($value);
 
-        $default = (count($default) > 0) ? $default : null;
-        $value = (count($value) > 0) ? $value : null;
+        $default = (is_array($default) && count($default) > 0) ? $default : null;
+        $value = (is_array($value) && count($value) > 0) ? $value : null;
 
         if (is_null($value) && is_null($default) && $required) {
             throw new ExBadRequest('Invalid vector value');
@@ -61,11 +61,11 @@ class RuVector
      */
     final public static function vectorify($data)
     {
-        if (count((array) $data) === 0) {
+        if (!is_array($data) || 0 === count((array) $data)) {
             return;
         }
 
-        if (is_object($data) && get_class($data) === 'stdClass') {
+        if (is_object($data) && 'stdClass' === get_class($data)) {
             foreach ($data as $key => $value) {
                 $data->$key = self::vectorify($value);
             }
