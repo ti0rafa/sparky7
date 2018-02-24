@@ -9,19 +9,27 @@ class Mongo
     /**
      * Return a Mongo BSON Id.
      *
-     * @param string $id Id
+     * @param string $value Id
      *
      * @return object Mongo ID Object
      */
-    final public static function id($id = null)
+    final public static function id($value = null)
     {
-        try {
-            if (extension_loaded('mongodb')) {
-                return new \MongoDB\BSON\ObjectId($id);
-            } elseif (extension_loaded('mongo')) {
-                return new \MongoId($id);
+        if (is_object($value) && is_a($value, 'MongoDB\BSON\ObjectId')) {
+            return $value;
+        } elseif (is_object($value) && is_a($value, 'MongoId')) {
+            return $value;
+        } elseif (is_string($value) && mb_strlen($value) > 0) {
+            try {
+                if (extension_loaded('mongodb')) {
+                    return new \MongoDB\BSON\ObjectId($value);
+                } elseif (extension_loaded('mongo')) {
+                    return new \MongoId($value);
+                }
+            } catch (Exception $Exception) {
+                return;
             }
-        } catch (Exception $Exception) {
+        } else {
             return;
         }
     }
@@ -29,16 +37,22 @@ class Mongo
     /**
      * Validate and return a Mongo BSON Date.
      *
-     * @param string $id Id
+     * @param int $timestamp Timestamp
      *
      * @return object Mongo ID Object
      */
-    final public static function date($timestamp = null)
+    final public static function date($value = null)
     {
-        if (extension_loaded('mongodb')) {
-            return new \MongoDB\BSON\UTCDateTime($timestamp);
-        } elseif (extension_loaded('mongo')) {
-            return new \MongoDate($date_time);
+        if (is_object($value) && is_a($value, 'MongoDB\BSON\UTCDateTime')) {
+            return $value;
+        } elseif (is_object($value) && is_a($value, 'MongoId')) {
+            return $value;
+        } else {
+            if (extension_loaded('mongodb')) {
+                return new \MongoDB\BSON\UTCDateTime($timestamp);
+            } elseif (extension_loaded('mongo')) {
+                return new \MongoDate($date_time);
+            }
         }
     }
 }

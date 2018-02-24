@@ -2,6 +2,7 @@
 
 namespace Sparky7\Cache;
 
+use MongoDB\BSON\ObjectId;
 use Sparky7\Cache\It\ItRedis;
 use Sparky7\Event\Emitter;
 
@@ -99,7 +100,7 @@ abstract class Collection
      */
     final public function key($key)
     {
-        if (is_object($key) && ('MongoId' === get_class($key) || 'MongoDB\BSON\ObjectId' === get_class($key))) {
+        if (is_object($key) && $key instanceof ObjectId) {
             $key = (string) $key;
         }
 

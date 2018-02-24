@@ -3,7 +3,6 @@
 namespace Sparky7\Property\Rule;
 
 use Sparky7\Error\Exception\ExBadRequest;
-use Exception;
 
 /**
  * MongoId rule.
@@ -27,20 +26,10 @@ class RuMongoIdInArray
 
         $data = [];
         foreach ($collection as $value) {
-            if (is_string($value) && strlen($value) > 0) {
-                try {
-                    if (extension_loaded('mongodb')) {
-                        $data[] = new \MongoDB\BSON\ObjectId($value);
-                    } elseif (extension_loaded('mongo')) {
-                        $data[] = new \MongoID($value);
-                    }
-                } catch (Exception $Exception) {
-                    continue;
-                }
-            } elseif (is_object($value) && ('MongoId' === get_class($value) || 'MongoDB\BSON\ObjectId' === get_class($value))) {
+            $value = RuMongoId($value);
+
+            if (null !== $value) {
                 $data[] = $value;
-            } else {
-                continue;
             }
         }
 

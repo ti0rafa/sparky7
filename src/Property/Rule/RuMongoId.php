@@ -24,14 +24,14 @@ class RuMongoId
      */
     final public static function sanitize($value)
     {
-        if (is_string($value) && mb_strlen($value) > 0) {
+        if ($value instanceof ObjectId) {
+            return $value;
+        } elseif (is_string($value) && mb_strlen($value) > 0) {
             try {
-                return new ObjectID($value);
+                return new ObjectId($value);
             } catch (Exception $Exception) {
                 return;
             }
-        } elseif (is_object($value) && 'MongoDB\BSON\ObjectId' === get_class($value)) {
-            return $value;
         } else {
             return;
         }
