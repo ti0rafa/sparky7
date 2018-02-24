@@ -19,17 +19,15 @@ class Mongo
             return $value;
         } elseif (is_object($value) && is_a($value, 'MongoId')) {
             return $value;
-        } elseif (is_string($value) && mb_strlen($value) > 0) {
-            try {
-                if (extension_loaded('mongodb')) {
-                    return new \MongoDB\BSON\ObjectId($value);
-                } elseif (extension_loaded('mongo')) {
-                    return new \MongoId($value);
-                }
-            } catch (Exception $Exception) {
-                return;
+        }
+
+        try {
+            if (extension_loaded('mongodb')) {
+                return new \MongoDB\BSON\ObjectId($value);
+            } elseif (extension_loaded('mongo')) {
+                return new \MongoId($value);
             }
-        } else {
+        } catch (Exception $Exception) {
             return;
         }
     }
