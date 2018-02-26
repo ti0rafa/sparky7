@@ -26,7 +26,7 @@ class RuMongoIdInArray
 
         $data = [];
         foreach ($collection as $value) {
-            $value = RuMongoId($value);
+            $value = RuMongoId::sanitize($value);
 
             if (null !== $value) {
                 $data[] = $value;
