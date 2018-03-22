@@ -198,6 +198,10 @@ abstract class Entity
         foreach ($this->define() as $name => $Property) {
             $value = (isset($data[$name])) ? $data[$name] : $Property->default;
 
+            if (is_a($value, 'MongoDB\Model\BSONDocument')) {
+                $value = json_decode(json_encode($value));
+            }
+
             $Property->set($value, 'loaded');
             $Property->sanitize();
 

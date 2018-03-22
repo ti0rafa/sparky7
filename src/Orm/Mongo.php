@@ -47,9 +47,9 @@ class Mongo
             return $value;
         } else {
             if (extension_loaded('mongodb')) {
-                return new \MongoDB\BSON\UTCDateTime($timestamp);
+                return new \MongoDB\BSON\UTCDateTime($value);
             } elseif (extension_loaded('mongo')) {
-                return new \MongoDate($date_time);
+                return new \MongoDate($value);
             }
         }
     }
