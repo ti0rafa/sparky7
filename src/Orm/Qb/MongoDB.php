@@ -2,186 +2,224 @@
 
 namespace Sparky7\Orm\Qb;
 
-use Sparky7\Api\Parameter;
-use Sparky7\Event\Emitter;
-use Sparky7\Orm\OrmException;
-use Exception;
 use IteratorIterator;
-use MongoDate;
-use MongoRegex;
+use MongoDB\Database;
+use MongoDB\BSON\ObjectId;
+use MongoDB\BSON\UTCDateTime;
+use Sparky7\Event\Emitter;
 
 /**
- * Mongo - Query builder class.
+ * Query builder class.
  */
 class MongoDB
 {
     use Emitter;
 
-    private $collection;
-    private $mongo;
+    protected $DataBase;
+    protected $collection;
 
-    private $limit;
-    private $projection;
-    private $skip;
-    private $sort;
-    private $query;
+    protected $query;
+    protected $options;
 
     /**
      * Construct method.
      *
-     * @param string $mongo      Mongo Cursor
-     * @param string $collection Collection
+     * @param Database $DataBase   DataBase object
+     * @param string   $collection Collection name
      */
-    final public function __construct(\MongoDB\Database $MongoDB, $collection)
+    final public function __construct(Database $DataBase, $collection)
     {
-        if (is_null($collection)) {
-            throw new Exception('Undefined collection name');
-        }
+        /*
+         * Parameters
+         */
 
+        $this->DataBase = $DataBase;
         $this->collection = $collection;
-        $this->MongoCollection = $MongoDB->{$collection};
 
-        $this->clear();
+        /*
+         * Clear values
+         */
+
+        $this->clearQueryOptions();
     }
 
     /**
-     * Aggregate framework method.
+     * Clear Query Options.
+     */
+    final public function clearQueryOptions()
+    {
+        $this->query = [];
+        $this->options = [];
+    }
+
+    /**
+     * Sanitize multiple values.
+     *
+     * @param any $raw_variable Raw data
+     *
+     * @return array Sanitize variable
+     */
+    final public function sanitize($raw_data)
+    {
+        if (is_array($raw_data)) {
+            $count_ignore = 0;
+            $sanitize_data = [];
+            foreach ($raw_data as $key => $value) {
+                $sanitize = self::sanitizeValue($value);
+
+                if ($sanitize->ignore) {
+                    ++$count_ignore;
+                }
+
+                $sanitize_data[$key] = $sanitize->value;
+            }
+
+            return (object) [
+                'ignore' => ($count_ignore === count($sanitize_data)) ? true : false,
+                'value' => $sanitize_data,
+            ];
+        }
+
+        return self::sanitizeValue($raw_data);
+    }
+
+    /**
+     * Sanitize value.
+     *
+     * @param any $raw_value Raw variable
+     *
+     * @return array Sanitize variable
+     */
+    final public function sanitizeValue($raw_value)
+    {
+        /*
+         * Sanitize if value is controller parameter
+         */
+
+        $controller_parameters = [
+            'Sparky7\Api\Parameter',
+        ];
+
+        if (is_object($raw_value) && in_array(get_class($raw_value), $controller_parameters)) {
+            if ('unset' === $raw_value->method) {
+                return (object) [
+                    'ignore' => true,
+                    'value' => $raw_value->value,
+                ];
+            }
+            $raw_value = $raw_value->value;
+        }
+
+        /*
+         * Sanitize previous mongo driver
+         */
+
+        if (is_a($raw_value, 'MongoId')) {
+            $raw_value = new ObjectId((string) $raw_value);
+        }
+
+        if (is_a($raw_value, 'MongoDate')) {
+            $raw_value = new UTCDateTime((int) $raw_value->sec * 1000);
+        }
+
+        return (object) [
+            'ignore' => false,
+            'value' => $raw_value,
+        ];
+    }
+
+    /**
+     * Aggregate.
      *
      * @param array $pipeline Pipeline
+     * @param array $options  Options
      *
-     * @return any Result
+     * @return cursor Cursor
      */
-    final public function aggregate(array $pipeline = [])
+    final public function aggregate(array $pipeline = [], array $options = [])
     {
         try {
-            $result = $this->MongoCollection->aggregate($pipeline);
+            return $this->DataBase->{$this->collection}->aggregate($pipeline, $options);
         } catch (Exception $Exception) {
             throw new OrmException($Exception->getMessage(), $Exception->getCode(), [
                 'method' => __METHOD__,
                 'collection' => $this->collection,
                 'pipeline' => $pipeline,
-                ]);
-        }
-
-        if ($result['ok'] == 1) {
-            return $result['result'];
-        } else {
-            return [];
+                'options' => $options,
+            ]);
         }
     }
 
     /**
-     * Count method.
+     * Count.
      *
-     * @return int Number of rows that match the search criteria
+     * @param array $query   Query
+     * @param array $options Options
+     *
+     * @return int Count
      */
-    final public function count()
+    final public function count(array $query = [], array $options = [])
     {
         /*
-         * Set query and options
+         * Parameters
          */
 
-        $query = (is_array($this->query)) ? $this->query : [];
-
-        $options = [];
-        if (!isset($options['limit']) && is_numeric($this->limit) && $this->limit > 0) {
-            $options['limit'] = $this->limit;
-        }
-        if (!isset($options['skip']) && is_numeric($this->skip) && $this->skip > 0) {
-            $options['skip'] = $this->skip;
-        }
+        $query = array_merge($this->query, $query);
+        $options = array_merge($this->options, $options);
 
         /*
-         * Execute query
+         * Query
          */
 
         try {
-            $result = $this->MongoCollection->count($query, $options);
+            $count = $this->DataBase->{$this->collection}->count($query, $options);
         } catch (Exception $Exception) {
             throw new OrmException($Exception->getMessage(), $Exception->getCode(), [
                 'method' => __METHOD__,
                 'collection' => $this->collection,
                 'query' => $query,
-                ]);
-        }
-
-        $this->clear();
-
-        return $result;
-    }
-
-    /**
-     * Get One Method.
-     *
-     * @return any Result
-     */
-    final public function findOne()
-    {
-        /*
-         * Set query and options
-         */
-
-        $query = (is_array($this->query)) ? $this->query : [];
-
-        $options = [];
-        if (!isset($options['projection']) && is_array($this->projection)) {
-            $options['projection'] = $this->projection;
-        }
-
-        /*
-         * Events
-         */
-
-        $this->emit('before.search', [
-            $query,
-            $options,
+                'options' => $options,
             ]);
+        }
 
         /*
-         * Execute query
+         * Clear data
          */
 
-        try {
-            return $this->MongoCollection->findOne(
-                $query,
-                $options
-                );
-        } catch (Exception $Exception) {
-            throw new OrmException($Exception->getMessage(), $Exception->getCode(), [
-                'method' => __METHOD__,
-                'collection' => $this->collection,
-                'select' => $projection,
-                'where' => $query,
-                ]);
-        }
+        $this->clearQueryOptions();
+
+        return $count;
     }
 
     /**
-     * Search Method.
+     * Exists.
      *
-     * @return any Result
+     * @param array $query   Query
+     * @param array $options Options
+     *
+     * @return bool Exists
      */
-    final public function find()
+    final public function exists(array $query = [], array $options = [])
+    {
+        return ($this->count($query, $options) > 0) ? true : false;
+    }
+
+    /**
+     * Find.
+     *
+     * @param array $query   Query
+     * @param array $options Options
+     *
+     * @return Iterator Iterator
+     */
+    final public function find(array $query = [], array $options = [])
     {
         /*
-         * Set query and options
+         * Parameters
          */
 
-        $query = (is_array($this->query)) ? $this->query : [];
-
-        $options = [];
-        if (!isset($options['limit']) && is_numeric($this->limit) && $this->limit > 0) {
-            $options['limit'] = $this->limit;
-        }
-        if (!isset($options['projection']) && is_array($this->projection) && count($this->projection) > 0) {
-            $options['projection'] = $this->projection;
-        }
-        if (!isset($options['skip']) && is_numeric($this->skip) && $this->skip > 0) {
-            $options['skip'] = $this->skip;
-        }
-        if (!isset($options['sort']) && is_array($this->sort) && count($this->sort) > 0) {
-            $options['sort'] = $this->sort;
-        }
+        $query = array_merge($this->query, $query);
+        $options = array_merge($this->options, $options);
 
         /*
          * Events
@@ -192,76 +230,123 @@ class MongoDB
             $options,
         ]);
 
+        /*
+         * Query
+         */
+
         try {
-            // Search
-            $cursor = $this->MongoCollection->find(
-                $query,
-                $options
-            );
-
-            // Clear query
-            $this->clear();
-
-            // Create Iterator
-            $IteratorIterator = new IteratorIterator($cursor);
-            $IteratorIterator->rewind();
-
-            return $IteratorIterator;
+            $cursor = $this->DataBase->{$this->collection}->find($query, $options);
         } catch (Exception $Exception) {
             throw new OrmException($Exception->getMessage(), $Exception->getCode(), [
                 'method' => __METHOD__,
                 'collection' => $this->collection,
-                'limit' => $this->limit,
-                'skip' => $this->skip,
-                'sort' => $this->sort,
                 'query' => $query,
+                'options' => $options,
             ]);
         }
+
+        /*
+         * Transform cursor into iterator
+         */
+
+        $Iterator = new IteratorIterator($cursor);
+        $Iterator->rewind();
+
+        /*
+         * Clear data
+         */
+
+        $this->clearQueryOptions();
+
+        return $Iterator;
     }
 
     /**
-     * Clear all query data.
+     * Find one.
+     *
+     * @param array $query   Query
+     * @param array $options Options
+     *
+     * @return array Document
      */
-    final public function clear()
+    final public function findOne(array $query = [], array $options = [])
     {
-        $this->limit = null;
-        $this->skip = null;
-        $this->projection = [];
-        $this->query = [];
-        $this->sort = [];
+        /*
+         * Parameters
+         */
+
+        $query = array_merge($this->query, $query);
+        $options = array_merge($this->options, $options);
+
+        /*
+         * Events
+         */
+
+        $this->emit('before.search', [
+            $query,
+            $options,
+        ]);
+
+        /*
+         * Query
+         */
+
+        try {
+            $result = $this->DataBase->{$this->collection}->findOne($query, $options);
+        } catch (Exception $Exception) {
+            throw new OrmException($Exception->getMessage(), $Exception->getCode(), [
+                'method' => __METHOD__,
+                'collection' => $this->collection,
+                'query' => $query,
+                'options' => $options,
+            ]);
+        }
+
+        /*
+         * Clear data
+         */
+
+        $this->clearQueryOptions();
+
+        return $result;
     }
 
     /**
      * Select fields from collection.
      *
-     * @param string/array  $field      Field name
-     * @param boolean/array $projection True to include False to exclude
+     * @param any $raw_value Field value
      *
      * @return object This Objet
      */
-    final public function select($field, $projection = true)
+    final public function select($raw_value)
     {
-        if ($field instanceof Parameter) {
-            if ($field->method === 'undefined') {
-                return $this;
+        /*
+         * Sanitize value
+         */
+
+        $sanitize = self::sanitize($raw_value);
+
+        if ($sanitize->ignore) {
+            return $this;
+        }
+
+        $select = $sanitize->value;
+
+        /*
+         * Add value to query
+         */
+
+        if (!is_array($select)) {
+            $select = [$select];
+        }
+
+        foreach ($select as $key => $value) {
+            $option = ('-' === substr($value, 0, 1)) ? -1 : 1;
+            $key = trim(str_replace('-', '', $value));
+
+            if (mb_strlen($key) > 0) {
+                $this->options['projection'][$key] = $option;
             }
-            $field = $field->value;
-        }
-
-        if (!is_array($field)) {
-            $field = [$field];
-        }
-
-        if (!is_array($projection)) {
-            $projection = [];
-            foreach ($field as $key => $value) {
-                $projection[$key] = $projection;
-            }
-            $projection = $projection;
-        }
-
-        foreach ($field as $key => $value) {
-            $this->projection[$value] = ($projection[$key]) ? 1 : -1;
         }
 
         return $this;
@@ -270,21 +355,30 @@ class MongoDB
     /**
      * Limit the number of returned rows.
      *
-     * @param int $limit Number of the rows to return
+     * @param int $raw_value Field value
      *
      * @return object This Object
      */
-    final public function limit($limit)
+    final public function limit($raw_value)
     {
-        if ($limit instanceof Parameter) {
-            if ($limit->method === 'undefined') {
-                return $this;
-            }
-            $limit = $limit->value;
+        /*
+         * Sanitize value
+         */
+
+        $sanitize = self::sanitize($raw_value);
+
+        if ($sanitize->ignore) {
+            return $this;
         }
 
+        $limit = $sanitize->value;
+
+        /*
+         * Add value to query
+         */
+
         if ($limit >= 0) {
-            $this->limit = (int) $limit;
+            $this->options['limit'] = (int) $limit;
         }
 
         return $this;
@@ -293,21 +387,30 @@ class MongoDB
     /**
      * Skip from return rows.
      *
-     * @param int $skip Rows to skip
+     * @param int $raw_value Field value
      *
      * @return object This object
      */
-    final public function skip($skip)
+    final public function skip($raw_value)
     {
-        if ($skip instanceof Parameter) {
-            if ($skip->method === 'undefined') {
-                return $this;
-            }
-            $skip = $skip->value;
+        /*
+         * Sanitize value
+         */
+
+        $sanitize = self::sanitize($raw_value);
+
+        if ($sanitize->ignore) {
+            return $this;
         }
 
+        $skip = $sanitize->value;
+
+        /*
+         * Add value to query
+         */
+
         if ($skip >= 0) {
-            $this->skip = (int) $skip;
+            $this->options['skip'] = (int) $skip;
         }
 
         return $this;
@@ -316,29 +419,39 @@ class MongoDB
     /**
      * Order rows by fields.
      *
-     * @param string/array  $field Field name
-     * @param boolean/array $asc   Associative array
+     * @param any $raw_value Field value
      *
      * @return object This object
      */
-    final public function sort($field)
+    final public function sort($raw_value)
     {
-        if ($field instanceof Parameter) {
-            if ($field->method === 'undefined') {
-                return $this;
+        /*
+         * Sanitize value
+         */
+
+        $sanitize = self::sanitize($raw_value);
+
+        if ($sanitize->ignore) {
+            return $this;
+        }
+
+        $sort = $sanitize->value;
+
+        /*
+         * Add value to query
+         */
+
+        if (!is_array($sort)) {
+            $sort = [$sort];
+        }
+
+        foreach ($sort as $key => $value) {
+            $option = ('-' === substr($value, 0, 1)) ? -1 : 1;
+            $key = trim(str_replace('-', '', $value));
+
+            if (mb_strlen($key) > 0) {
+                $this->options['sort'][$key] = $option;
             }
-            $field = $field->value;
-        }
-
-        if (!is_array($field)) {
-            $field = [$field];
-        }
-
-        foreach ($field as $key => $value) {
-            $sort = (substr($value, 0, 1) === '-') ? -1 : 1;
-            $key = str_replace('-', '', $value);
-
-            $this->sort[$key] = $sort;
         }
 
         return $this;
@@ -360,19 +473,28 @@ class MongoDB
     /**
      * Where value matches row.
      *
-     * @param string $field Field name
-     * @param any    $value Field value
+     * @param string $field     Field name
+     * @param any    $raw_value Field value
      *
      * @return object This object
      */
-    final public function where($field, $value = null)
+    final public function where($field, $raw_value = null)
     {
-        if ($value instanceof Parameter) {
-            if ($value->method === 'unset') {
-                return $this;
-            }
-            $value = $value->value;
+        /*
+         * Sanitize value
+         */
+
+        $sanitize = self::sanitize($raw_value);
+
+        if ($sanitize->ignore) {
+            return $this;
         }
+
+        $value = $sanitize->value;
+
+        /*
+         * Add value to query
+         */
 
         $this->query[$field] = $value;
 
@@ -382,19 +504,28 @@ class MongoDB
     /**
      * Where not equals.
      *
-     * @param string $field Field name
-     * @param any    $value Field value
+     * @param string $field     Field name
+     * @param any    $raw_value Field value
      *
      * @return object This object
      */
-    final public function whereNe($field, $value = null)
+    final public function whereNe($field, $raw_value = null)
     {
-        if ($value instanceof Parameter) {
-            if ($value->method === 'undefined') {
-                return $this;
-            }
-            $value = $value->value;
+        /*
+         * Sanitize value
+         */
+
+        $sanitize = self::sanitize($raw_value);
+
+        if ($sanitize->ignore) {
+            return $this;
         }
+
+        $value = $sanitize->value;
+
+        /*
+         * Add value to query
+         */
 
         $this->query[$field]['$ne'] = $value;
 
@@ -404,33 +535,31 @@ class MongoDB
     /**
      * Where value greater then.
      *
-     * @param string $field Field name
-     * @param any    $value Field value
-     * @param string $type  Field type
+     * @param string $field     Field name
+     * @param any    $raw_value Field value
+     * @param string $type      Field type
      *
      * @return object This object
      */
-    final public function whereGt($field, $value = null, $type = null)
+    final public function whereGt($field, $raw_value = null)
     {
-        if ($value instanceof Parameter) {
-            if ($value->method === 'undefined') {
-                return $this;
-            }
-            $value = $value->value;
+        /*
+         * Sanitize value
+         */
+
+        $sanitize = self::sanitize($raw_value);
+
+        if ($sanitize->ignore) {
+            return $this;
         }
 
-        switch ($type) {
-            case 'date':
-                if (is_object($value) && get_class($value) === 'MongoDate') {
-                    $this->query[$field]['$gt'] = $value;
-                } else {
-                    $this->query[$field]['$gt'] = new MongoDate($value);
-                }
-                break;
-            default:
-                 $this->query[$field]['$gt'] = $value;
-                break;
-        }
+        $value = $sanitize->value;
+
+        /*
+         * Add value to query
+         */
+
+        $this->query[$field]['$gt'] = $value;
 
         return $this;
     }
@@ -438,33 +567,30 @@ class MongoDB
     /**
      * Where value greater then or equals.
      *
-     * @param string $field Field name
-     * @param any    $value Field value
-     * @param string $type  Field type
+     * @param string $field     Field name
+     * @param any    $raw_value Field value
      *
      * @return object This object
      */
-    final public function whereGte($field, $value = null, $type = null)
+    final public function whereGte($field, $raw_value = null)
     {
-        if ($value instanceof Parameter) {
-            if ($value->method === 'undefined') {
-                return $this;
-            }
-            $value = $value->value;
+        /*
+         * Sanitize value
+         */
+
+        $sanitize = self::sanitize($raw_value);
+
+        if ($sanitize->ignore) {
+            return $this;
         }
 
-        switch ($type) {
-            case 'date':
-                if (is_object($value) && get_class($value) === 'MongoDate') {
-                    $this->query[$field]['$gte'] = $value;
-                } else {
-                    $this->query[$field]['$gte'] = new MongoDate($value);
-                }
-                break;
-            default:
-                 $this->query[$field]['$gte'] = $value;
-                break;
-        }
+        $value = $sanitize->value;
+
+        /*
+         * Add value to query
+         */
+
+        $this->query[$field]['$gte'] = $value;
 
         return $this;
     }
@@ -472,33 +598,30 @@ class MongoDB
     /**
      * Where lesser than.
      *
-     * @param string $field Field name
-     * @param any    $value Field value
-     * @param string $type  Field type
+     * @param string $field     Field name
+     * @param any    $raw_value Field value
      *
      * @return object This object
      */
-    final public function whereLt($field, $value = null, $type = null)
+    final public function whereLt($field, $raw_value = null)
     {
-        if ($value instanceof Parameter) {
-            if ($value->method === 'undefined') {
-                return $this;
-            }
-            $value = $value->value;
+        /*
+         * Sanitize value
+         */
+
+        $sanitize = self::sanitize($raw_value);
+
+        if ($sanitize->ignore) {
+            return $this;
         }
 
-        switch ($type) {
-            case 'date':
-                if (is_object($value) && get_class($value) === 'MongoDate') {
-                    $this->query[$field]['$lt'] = $value;
-                } else {
-                    $this->query[$field]['$lt'] = new MongoDate($value);
-                }
-                break;
-            default:
-                 $this->query[$field]['$lt'] = $value;
-                break;
-        }
+        $value = $sanitize->value;
+
+        /*
+         * Add value to query
+         */
+
+        $this->query[$field]['$lt'] = $value;
 
         return $this;
     }
@@ -506,118 +629,30 @@ class MongoDB
     /**
      * Where lesser than equals.
      *
-     * @param string $field Field name
-     * @param any    $value Field value
-     * @param string $type  Field type
+     * @param string $field     Field name
+     * @param any    $raw_value Field value
      *
      * @return object This object
      */
-    final public function whereLte($field, $value = null, $type = null)
+    final public function whereLte($field, $raw_value = null)
     {
-        if ($value instanceof Parameter) {
-            if ($value->method === 'undefined') {
-                return $this;
-            }
-            $value = $value->value;
+        /*
+         * Sanitize value
+         */
+
+        $sanitize = self::sanitize($raw_value);
+
+        if ($sanitize->ignore) {
+            return $this;
         }
 
-        switch ($type) {
-            case 'date':
-                if (is_object($value) && get_class($value) === 'MongoDate') {
-                    $this->query[$field]['$lte'] = $value;
-                } else {
-                    $this->query[$field]['$lte'] = new MongoDate($value);
-                }
-                break;
+        $value = $sanitize->value;
 
-            default:
-                 $this->query[$field]['$lte'] = $value;
-                break;
-        }
+        /*
+         * Add value to query
+         */
 
-        return $this;
-    }
-
-    /**
-     * Where field like.
-     *
-     * @param string $field               Field name
-     * @param string $value               Field value
-     * @param string $flags               Flags (??)
-     * @param bool   $enableStartWildcard (??)
-     * @param bool   $enableEndWildcard   (??)
-     *
-     * @return object This Object
-     */
-    final public function whereLike(
-        $field,
-        $value = null,
-        $flags = 'i',
-        $enableStartWildcard = true,
-        $enableEndWildcard = true
-    ) {
-        if ($value instanceof Parameter) {
-            if ($value->method === 'undefined') {
-                return $this;
-            }
-            $value = $value->value;
-        }
-
-        $value = trim($value);
-        $value = quotemeta($value);
-
-        if ($enableStartWildcard !== true) {
-            $value = '^'.$value;
-        }
-
-        if ($enableEndWildcard !== true) {
-            $value .= '$';
-        }
-
-        $this->query[$field] = new MongoRegex('/'.$value.'/'.$flags);
-
-        return $this;
-    }
-
-    /**
-     * Where field or like.
-     *
-     * @param string $field               Field name
-     * @param string $value               Field value
-     * @param string $flags               Flags (??)
-     * @param bool   $enableStartWildcard (??)
-     * @param bool   $enableEndWildcard   (??)
-     *
-     * @return object This Object
-     */
-    final public function whereOrLike(
-        $field,
-        $value = null,
-        $flags = 'i',
-        $enableStartWildcard = true,
-        $enableEndWildcard = true
-    ) {
-        if ($value instanceof Parameter) {
-            if ($value->method === 'undefined') {
-                return $this;
-            }
-            $value = $value->value;
-        }
-
-        $value = trim($value);
-        $value = quotemeta($value);
-
-        if ($enableStartWildcard !== true) {
-            $value = '^'.$value;
-        }
-
-        if ($enableEndWildcard !== true) {
-            $value .= '$';
-        }
-
-        $this->query['$or'][] = [
-            $field => new MongoRegex('/'.$value.'/'.$flags),
-            ];
+        $this->query[$field]['$lte'] = $value;
 
         return $this;
     }
@@ -625,21 +660,30 @@ class MongoDB
     /**
      * Where value in.
      *
-     * @param string $field  Field name
-     * @param array  $values Field values
+     * @param string $field     Field name
+     * @param array  $raw_value Field value
      *
      * @return object This Object
      */
-    final public function whereIn($field, $values)
+    final public function whereIn($field, array $raw_value)
     {
-        if ($values instanceof Parameter) {
-            if ($values->method === 'undefined') {
-                return $this;
-            }
-            $values = $values->value;
+        /*
+         * Sanitize value
+         */
+
+        $sanitize = self::sanitize($raw_value);
+
+        if ($sanitize->ignore) {
+            return $this;
         }
 
-        $this->query[$field]['$in'] = $values;
+        $value = $sanitize->value;
+
+        /*
+         * Add value to query
+         */
+
+        $this->query[$field]['$in'] = $value;
 
         return $this;
     }
@@ -647,23 +691,30 @@ class MongoDB
     /**
      * Where all values have matches in the db.
      *
-     * @param string $field  Field name
-     * @param array  $values Field values
+     * @param string $field     Field name
+     * @param array  $raw_value Field value
      *
      * @return object This Object
      */
-    final public function whereAll($field, $values)
+    final public function whereAll($field, array $raw_value)
     {
-        if ($values instanceof Parameter) {
-            if ($values->method === 'undefined') {
-                return $this;
-            }
-            $values = $values->value;
+        /*
+         * Sanitize value
+         */
+
+        $sanitize = self::sanitize($raw_value);
+
+        if ($sanitize->ignore) {
+            return $this;
         }
 
-        if (count($values) > 0) {
-            $this->query[$field]['$all'] = $values;
-        }
+        $value = $sanitize->value;
+
+        /*
+         * Add value to query
+         */
+
+        $this->query[$field]['$all'] = $value;
 
         return $this;
     }
@@ -671,21 +722,30 @@ class MongoDB
     /**
      * Where not in values.
      *
-     * @param string $field  Field name
-     * @param array  $values Field values
+     * @param string $field     Field name
+     * @param array  $raw_value Field value
      *
      * @return object This object
      */
-    final public function whereNin($field, $values)
+    final public function whereNin($field, array $raw_value)
     {
-        if ($values instanceof Parameter) {
-            if ($values->method === 'undefined') {
-                return $this;
-            }
-            $values = $values->value;
+        /*
+         * Sanitize value
+         */
+
+        $sanitize = self::sanitize($raw_value);
+
+        if ($sanitize->ignore) {
+            return $this;
         }
 
-        $this->query[$field]['$nin'] = $values;
+        $value = $sanitize->value;
+
+        /*
+         * Add value to query
+         */
+
+        $this->query[$field]['$nin'] = $value;
 
         return $this;
     }
@@ -693,106 +753,35 @@ class MongoDB
     /**
      * Where or.
      *
-     * @param string $field Field name
-     * @param array  $value Values
+     * @param string $field     Field name
+     * @param any    $raw_value Field value
      *
      * @return object This object
      */
-    final public function whereOr($field, $values)
+    final public function whereOr($field, $raw_value)
     {
-        if ($values instanceof Parameter) {
-            if ($values->method === 'undefined') {
-                return $this;
-            }
-            $values = $values->value;
+        /*
+         * Sanitize value
+         */
+
+        $sanitize = self::sanitize($raw_value);
+
+        if ($sanitize->ignore) {
+            return $this;
         }
+
+        $value = $sanitize->value;
+
+        /*
+         * Add value to query
+         */
 
         if (!isset($this->query['$or'])) {
             $this->query['$or'] = [];
         }
 
-        $this->query['$or'][] = [$field => $values];
+        $this->query['$or'][] = [$field => $value];
 
         return $this;
-    }
-
-    /**
-     * Where near.
-     *
-     * @param string $field  Field name
-     * @param array  $coords Coordenates
-     *
-     * @return object This object
-     */
-    final public function whereNear($field, array $coords = [], $spherical = true)
-    {
-        if ($spherical) {
-            $this->query[$field]['$nearSphere'] = $coords;
-        } else {
-            $this->query[$field]['$near'] = $coords;
-        }
-
-        if ($distance !== null) {
-            $this->query[$field]['$maxDistance'] = $distance;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Where field regex.
-     *
-     * @param string $field               Field name
-     * @param string $value               Field value
-     * @param string $flags               Flags (??)
-     * @param bool   $enableStartWildcard (??)
-     * @param bool   $enableEndWildcard   (??)
-     *
-     * @return object This Object
-     */
-    final public function whereRegex(
-        $field,
-        $value = null,
-        $flags = 'i',
-        $enableStartWildcard = true,
-        $enableEndWildcard = true
-    ) {
-        $value = trim($value);
-
-        if ($enableStartWildcard !== true) {
-            $value = '^'.$value;
-        }
-
-        if ($enableEndWildcard !== true) {
-            $value .= '$';
-        }
-
-        $this->query[$field] = new MongoRegex('/'.$value.'/'.$flags);
-
-        return $this;
-    }
-
-    /**
-     * Remove method.
-     *
-     * @param array|null $query Search criteria
-     */
-    final public function remove(array $query = null)
-    {
-        $query = (!is_null($query)) ? $query : $this->query;
-
-        try {
-            $this->MongoCollection->deleteMany($query);
-        } catch (Exception $Exception) {
-            throw new OrmException($Exception->getMessage(), $Exception->getCode(), [
-                'method' => __METHOD__,
-                'collection' => $this->collection,
-                'where' => $query,
-            ]);
-        }
-
-        $this->clear();
-
-        return;
     }
 }
