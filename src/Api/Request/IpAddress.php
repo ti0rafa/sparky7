@@ -28,7 +28,7 @@ class IpAddress
             $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
             $ip = explode(',', $ip);
 
-            return (count($ip) > 1) ? $ip[0] : $ip;
+            return (is_array($ip)) ? $ip[0] : $ip;
         }
 
         /*
