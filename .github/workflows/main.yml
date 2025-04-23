@@ -2,9 +2,14 @@ on:
   push:
     branches: ['master']
 
-uses: mnavarrocarter/packagist-update@v1.0
-with:
-  username: "ti0rafa"
-  api_token: "fb658f8e9340ceaa12d20d2448de27ebed55e7e9"
-  package_name: "tiorafa/sparky7"
-  domain: "packagist.org"
+jobs:
+  update-packagist:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update Packagist
+        uses: mnavarrocarter/packagist-update@v1.0
+        with:
+          username: "ti0rafa"
+          api_token: ${{ secrets.PACKAGIST_API_TOKEN }}
+          package_name: "tiorafa/sparky7"
+          domain: "packagist.org"
