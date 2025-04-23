@@ -1,4 +1,4 @@
-            - name: Packagist Publish
+- name: Packagist Publish
   # You may pin to the exact commit or the version.
   # uses: wscourge/gha-packagist-publish@a16eb68dbf761af729985939e41e81b59ac37da2
   uses: wscourge/gha-packagist-publish@1.0.2
