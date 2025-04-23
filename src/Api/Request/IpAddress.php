@@ -10,7 +10,7 @@ class IpAddress
     /**
      * Detect remote ip address.
      */
-    final public static function detect($use_default = false)
+    public static function detect($use_default = false)
     {
         /*
          * Cloudflare

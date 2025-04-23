@@ -12,7 +12,7 @@ class Trace
      *
      * @return array Trace array
      */
-    final public static function getTrace($Catchable)
+    public static function getTrace($Catchable)
     {
         $trace = [];
 
@@ -37,7 +37,7 @@ class Trace
      *
      * @return array Trace with its info flatten
      */
-    final public static function removeArguments(array $source)
+    public static function removeArguments(array $source)
     {
         if (is_null($source)) {
             return [];
@@ -46,7 +46,7 @@ class Trace
         $trace = [];
         foreach ($source as $key => $value) {
             if (array_key_exists('file', $value)) {
-                $trace[$key]['File'] = $value['file'].' ('.$value['line'].')';
+                $trace[$key]['File'] = $value['file'] . ' (' . $value['line'] . ')';
             } else {
                 continue;
             }
@@ -54,15 +54,15 @@ class Trace
             if (array_key_exists('class', $value) &&
                 array_key_exists('type', $value) &&
                 array_key_exists('function', $value)) {
-                $trace[$key]['Object'] = $value['class'].$value['type'].$value['function'].'()';
+                $trace[$key]['Object'] = $value['class'] . $value['type'] . $value['function'] . '()';
             }
 
             if (array_key_exists('class', $value)) {
-                $trace[$key]['Object'] = $value['class'].'()';
+                $trace[$key]['Object'] = $value['class'] . '()';
             }
 
             if (array_key_exists('function', $value)) {
-                $trace[$key]['Function'] = $value['function'].'()';
+                $trace[$key]['Function'] = $value['function'] . '()';
             }
 
             if (array_key_exists('args', $value) && count($value['args']) > 0) {
@@ -86,7 +86,7 @@ class Trace
                         break;
                     case 'array':
                     case 'object':
-                        $trace[$key]['Arguments'] = '{'.gettype($value).'}';
+                        $trace[$key]['Arguments'] = '{' . gettype($value) . '}';
                         break;
                 }
             }

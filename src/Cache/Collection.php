@@ -98,13 +98,13 @@ abstract class Collection
      *
      * @return string Hash Key
      */
-    final public function key($key)
+    public function key($key)
     {
         if (is_object($key) && $key instanceof ObjectId) {
             $key = (string) $key;
         }
 
-        return $this->prefix.':'.hash($this->algorithm, $key);
+        return $this->prefix . ':' . hash($this->algorithm, $key);
     }
 
     /**
@@ -134,7 +134,7 @@ abstract class Collection
      *
      * @return bool
      */
-    final public function has($key)
+    public function has($key)
     {
         return $this->CacheInterface->has($this->key($key));
     }

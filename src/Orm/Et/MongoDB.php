@@ -12,7 +12,7 @@ class MongoDB
     /**
      * Constructor.
      */
-    final public function __construct(\MongoDB\Collection $MongoCollection)
+    public function __construct(\MongoDB\Collection $MongoCollection)
     {
         $this->MongoCollection = $MongoCollection;
     }
@@ -22,7 +22,7 @@ class MongoDB
      *
      * @param array $document Document data
      */
-    final public function insert(array $document)
+    public function insert(array $document)
     {
         $this->MongoCollection->insertOne($document);
 
@@ -35,7 +35,7 @@ class MongoDB
      * @param array $query    Match criteria
      * @param array $document Document data
      */
-    final public function update(array $query, array $document)
+    public function update(array $query, array $document)
     {
         $this->MongoCollection->replaceOne($query, $document);
 
@@ -47,7 +47,7 @@ class MongoDB
      *
      * @param array $query Match criteria
      */
-    final public function delete(array $query)
+    public function delete(array $query)
     {
         $this->MongoCollection->deleteOne($query);
 

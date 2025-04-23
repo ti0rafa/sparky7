@@ -31,7 +31,7 @@ abstract class Entity
     /**
      * Constructor.
      */
-    final public function __construct($MongoCollection, array $data = [])
+    public function __construct($MongoCollection, array $data = [])
     {
         /*
          * Configure mongo driver (map methods from legacy and current driver)
@@ -70,10 +70,10 @@ abstract class Entity
      *
      * @return any Property value
      */
-    final public function __get($name)
+    public function __get($name)
     {
         if (!isset($this->data[$name])) {
-            throw new Exception('Invalid property '.$name);
+            throw new Exception('Invalid property ' . $name);
         }
 
         return $this->data[$name]->value;
@@ -86,7 +86,7 @@ abstract class Entity
      *
      * @return bool
      */
-    final public function __isset($name)
+    public function __isset($name)
     {
         return isset($this->data[$name]);
     }
@@ -97,7 +97,7 @@ abstract class Entity
      * @param string $name  Property name
      * @param value  $value Property value
      */
-    final public function __set($name, $value)
+    public function __set($name, $value)
     {
         if (!isset($this->data[$name])) {
             return;
@@ -119,7 +119,7 @@ abstract class Entity
 
         $this->method[$name] = 'event';
 
-        $this->emit('before.set.'.$name, [
+        $this->emit('before.set.' . $name, [
             $value,
             $this->data[$name]->value,
             $this->data[$name]->previous,
@@ -142,7 +142,7 @@ abstract class Entity
      * @param string $name  Property name
      * @param value  $value Property value
      */
-    final public function set($name, $value)
+    public function set($name, $value)
     {
         if (!isset($this->data[$name])) {
             return;
@@ -157,7 +157,7 @@ abstract class Entity
      *
      * @param string $name Property name
      */
-    final public function __unset($name)
+    public function __unset($name)
     {
         if (!isset($this->data[$name])) {
             return;
@@ -215,7 +215,7 @@ abstract class Entity
      *
      * @return bool
      */
-    final public function isValid()
+    public function isValid()
     {
         return $this->is_valid;
     }
@@ -225,7 +225,7 @@ abstract class Entity
      *
      * @return ID
      */
-    final public function getId()
+    public function getId()
     {
         if (!$this->isValid()) {
             return;
@@ -237,7 +237,7 @@ abstract class Entity
     /**
      * Save entity.
      */
-    final public function save()
+    public function save()
     {
         return ($this->isValid()) ? $this->update() : $this->insert();
     }
@@ -247,7 +247,7 @@ abstract class Entity
      *
      * @return bool
      */
-    final public function insert()
+    public function insert()
     {
         if ($this->isValid()) {
             return false;
@@ -271,7 +271,7 @@ abstract class Entity
             try {
                 $Property->validate();
             } catch (Exception $Exception) {
-                throw new ExBadRequest($Exception->getMessage().': '.$name.' in '.get_class($this));
+                throw new ExBadRequest($Exception->getMessage() . ': ' . $name . ' in ' . get_class($this));
             }
 
             $row[$name] = $Property->value;
@@ -303,7 +303,7 @@ abstract class Entity
      *
      * @return bool
      */
-    final public function update()
+    public function update()
     {
         if (!$this->isValid()) {
             return false;
@@ -321,7 +321,7 @@ abstract class Entity
             try {
                 $Property->validate();
             } catch (Exception $Exception) {
-                throw new ExBadRequest($Exception->getMessage().': '.$name.' in '.get_class($this));
+                throw new ExBadRequest($Exception->getMessage() . ': ' . $name . ' in ' . get_class($this));
             }
 
             $row[$name] = $Property->value;
@@ -355,7 +355,7 @@ abstract class Entity
      *
      * @return bool
      */
-    final public function delete()
+    public function delete()
     {
         if (!$this->isValid()) {
             return false;
@@ -388,7 +388,7 @@ abstract class Entity
      *
      * @return array Entity data
      */
-    final public function toArray()
+    public function toArray()
     {
         $row = [];
         foreach ($this->data as $name => $Property) {
@@ -400,7 +400,7 @@ abstract class Entity
                 /**
                  * Launch event.
                  */
-                $event_value = $this->emit('before.array.'.$name, [$row[$field]]);
+                $event_value = $this->emit('before.array.' . $name, [$row[$field]]);
 
                 if (!is_null($event_value)) {
                     $row[$field] = $event_value;

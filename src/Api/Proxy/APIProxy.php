@@ -2,9 +2,9 @@
 
 namespace Sparky7\Api\Proxy;
 
+use Exception;
 use Sparky7\Api\Response\APIResponse;
 use Sparky7\Helper\Json;
-use Exception;
 
 /**
  * API style proxy.
@@ -17,7 +17,7 @@ class APIProxy
     /**
      * Construct method.
      */
-    final public function __construct()
+    public function __construct()
     {
         $this->call = null;
         $this->content = null;
@@ -30,7 +30,7 @@ class APIProxy
      *
      * @return string Parameter value
      */
-    final public function __get($key)
+    public function __get($key)
     {
         return (isset($this->{$key})) ? $this->{$key} : null;
     }
@@ -42,7 +42,7 @@ class APIProxy
      *
      * @return string Extension
      */
-    final public function fileExtension($mime)
+    public function fileExtension($mime)
     {
         switch ($mime) {
             case 'application/pdf':
@@ -66,7 +66,7 @@ class APIProxy
             case 'text/xml':
                 return 'xml';
             default:
-                throw new Exception('Invalid mime type: '.$mime);
+                throw new Exception('Invalid mime type: ' . $mime);
         }
     }
 
@@ -77,7 +77,7 @@ class APIProxy
      * @param array  $argument Parameters
      * @param bool True or false
      */
-    final public function delete($url, array $argument = [])
+    public function delete($url, array $argument = [])
     {
         return $this->sendRequest($url, strtoupper(__FUNCTION__), $argument);
     }
@@ -89,7 +89,7 @@ class APIProxy
      * @param array  $argument Parameters
      * @param bool True or false
      */
-    final public function get($url, array $argument = [])
+    public function get($url, array $argument = [])
     {
         return $this->sendRequest($url, strtoupper(__FUNCTION__), $argument);
     }
@@ -101,7 +101,7 @@ class APIProxy
      * @param array  $argument Parameters
      * @param bool True or false
      */
-    final public function post($url, array $argument = [])
+    public function post($url, array $argument = [])
     {
         return $this->sendRequest($url, strtoupper(__FUNCTION__), $argument);
     }
@@ -113,7 +113,7 @@ class APIProxy
      * @param array  $argument Parameters
      * @param bool True or false
      */
-    final public function put($url, array $argument = [])
+    public function put($url, array $argument = [])
     {
         return $this->sendRequest($url, strtoupper(__FUNCTION__), $argument);
     }
@@ -125,7 +125,7 @@ class APIProxy
      *
      * @return string Content type
      */
-    final private function sanitizeContentType($content_type = null)
+    private function sanitizeContentType($content_type = null)
     {
         $available = ['application/json', 'application/x-www-form-urlencoded', 'multipart/form-data-encoded'];
 
@@ -140,13 +140,13 @@ class APIProxy
          */
 
         foreach ($available as $value) {
-            if (strpos($content_type, $value) !== false) {
+            if (false !== strpos($content_type, $value)) {
                 return $value;
             }
         }
 
         foreach ($available as $value) {
-            if (strpos($request, $value) !== false) {
+            if (false !== strpos($request, $value)) {
                 return $value;
             }
         }
@@ -161,7 +161,7 @@ class APIProxy
      *
      * @return string Method
      */
-    final private function santizeMethod($method = null)
+    private function santizeMethod($method = null)
     {
         $available = ['GET', 'POST', 'PUT', 'DELETE', 'HEAD'];
 
@@ -195,7 +195,7 @@ class APIProxy
      * @param string $rid      Request ID
      * @param APIReseponse API Response Object
      */
-    final public function sendRequest($url, $method = null, array $argument = [], $rid = null)
+    public function sendRequest($url, $method = null, array $argument = [], $rid = null)
     {
         $uri = parse_url($url);
 
@@ -206,7 +206,7 @@ class APIProxy
         $this->call['resource'] = $uri['path'];
         $this->call['parameters'] = $argument;
         $this->call['files'] = [];
-        $this->call['url'] = $uri['scheme'].'://'.$uri['host'].$uri['path'];
+        $this->call['url'] = $uri['scheme'] . '://' . $uri['host'] . $uri['path'];
 
         /*
          * Converts Files into base64
@@ -227,8 +227,8 @@ class APIProxy
                 $temp_path = $file['tmp_name'];
             }
 
-            $this->call['files'][$name] = 'data:'.mime_content_type($temp_path);
-            $this->call['files'][$name] .= ';base64,'.base64_encode(file_get_contents($temp_path));
+            $this->call['files'][$name] = 'data:' . mime_content_type($temp_path);
+            $this->call['files'][$name] .= ';base64,' . base64_encode(file_get_contents($temp_path));
             $files[] = $temp_path; // store file array for deletion
         }
 
@@ -258,7 +258,7 @@ class APIProxy
             'HTTP_USER_AGENT' => 'User-Agent',
         ];
 
-        $this->call['headers'][] = 'Content-Type: '.$this->call['content_type'];
+        $this->call['headers'][] = 'Content-Type: ' . $this->call['content_type'];
         $this->call['headers']['X-Forwarded-For'] = RemoteAddress::ip();
         if (!is_null($rid)) {
             $this->call['headers']['X-Requested-ID'] = $rid;
@@ -267,7 +267,7 @@ class APIProxy
 
         foreach ($forward_headers as $expected => $header) {
             if (isset($_SERVER[$expected])) {
-                $this->call['headers'][] = $header.': '.$_SERVER[$expected];
+                $this->call['headers'][] = $header . ': ' . $_SERVER[$expected];
             }
         }
 
@@ -287,11 +287,11 @@ class APIProxy
                 $this->call['parameters'] = [];
                 break;
             case 'GET':
-                $this->call['url'] .= '?'.http_build_query($this->call['parameters']);
+                $this->call['url'] .= '?' . http_build_query($this->call['parameters']);
                 $this->call['parameters'] = [];
                 break;
             case 'POST':
-                if ($this->call['content_type'] === 'multipart/form-data-encoded') {
+                if ('multipart/form-data-encoded' === $this->call['content_type']) {
                     $params = [];
                     foreach (explode('&', http_build_query($this->call['parameters'])) as $key) {
                         $value = explode('=', $key);
@@ -299,7 +299,7 @@ class APIProxy
                     }
 
                     $this->call['parameters'] = array_merge($params, $this->call['files']);
-                } elseif ($this->call['content_type'] === 'application/x-www-form-urlencoded') {
+                } elseif ('application/x-www-form-urlencoded' === $this->call['content_type']) {
                     $this->call['parameters'] = http_build_query($this->call['parameters']);
                 }
                 break;
@@ -307,13 +307,13 @@ class APIProxy
             case 'PUT':
                 break;
             default:
-                throw new Exception('Unkown method type: '.$this->call['method']);
+                throw new Exception('Unkown method type: ' . $this->call['method']);
         }
 
         curl_setopt($curl, CURLOPT_URL, $this->call['url']);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $this->call['method']);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $this->call['headers']);
-        if ($this->call['content_type'] === 'application/json' && count($this->call['parameters']) > 0) {
+        if ('application/json' === $this->call['content_type'] && count($this->call['parameters']) > 0) {
             curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($this->call['parameters']));
         } elseif (count($this->call['parameters']) > 0) {
             curl_setopt($curl, CURLOPT_POSTFIELDS, $this->call['parameters']);
@@ -357,25 +357,25 @@ class APIProxy
                 'rid' => $rid,
                 'code' => 503,
                 'status' => false,
-                'message' => 'Service Unavailable: '.trim($curl_error),
+                'message' => 'Service Unavailable: ' . trim($curl_error),
                 'response' => null,
-                ];
-        } elseif ($this->call['method'] === 'HEAD' && strlen($curl_error) === 0) {
+            ];
+        } elseif ('HEAD' === $this->call['method'] && 0 === strlen($curl_error)) {
             $this->content = [
                 'rid' => $rid,
                 'code' => $curl_code,
                 'status' => true,
                 'message' => null,
                 'response' => null,
-                ];
-        } elseif ($this->content === false) {
+            ];
+        } elseif (false === $this->content) {
             $this->content = [
                 'rid' => $rid,
                 'code' => 503,
                 'status' => false,
-                'message' => 'Decode error: '.Json::getMessageError(),
+                'message' => 'Decode error: ' . Json::getMessageError(),
                 'response' => null,
-                ];
+            ];
         }
 
         /*

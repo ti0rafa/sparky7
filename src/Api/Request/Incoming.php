@@ -18,7 +18,7 @@ class Incoming
      *
      * @return array Request variables
      */
-    final public static function all()
+    public static function all()
     {
         return [
             'GET' => self::get(),
@@ -35,7 +35,7 @@ class Incoming
      *
      * @return array Data
      */
-    final private static function decode($data)
+    private static function decode($data)
     {
         foreach ($data as $key => $value) {
             if (is_string($value)) {
@@ -57,11 +57,11 @@ class Incoming
      *
      * @return array Data
      */
-    final private static function detachFile(array $data)
+    private static function detachFile(array $data)
     {
         $return = [];
         foreach ($data as $key => $value) {
-            if (is_scalar($value) && strpos($value, 'data:') === 0 && strpos($value, ';base64,') !== false) {
+            if (is_scalar($value) && 0 === strpos($value, 'data:') && false !== strpos($value, ';base64,')) {
                 // Get data
                 $start = strpos($value, ';base64,') + strlen(';base64,') - 1;
                 $data = substr($value, $start, strlen($value));
@@ -74,21 +74,21 @@ class Incoming
                 // Get extension
                 $extension = self::fileExtension($mime);
 
-                $name = uniqid().'.'.$extension;
+                $name = uniqid() . '.' . $extension;
 
                 // File path
-                $tmp_name = sys_get_temp_dir().'/'.$name;
+                $tmp_name = sys_get_temp_dir() . '/' . $name;
 
                 // Save file
                 file_put_contents($tmp_name, base64_decode($data));
 
-                $_FILES[$key] = array(
+                $_FILES[$key] = [
                     'error' => 0,
                     'name' => $name,
                     'tmp_name' => $tmp_name,
                     'type' => $mime,
                     'size' => filesize($tmp_name),
-                );
+                ];
             } else {
                 $return[$key] = $value;
             }
@@ -104,7 +104,7 @@ class Incoming
      *
      * @return string Extension
      */
-    final private static function fileExtension($mime)
+    private static function fileExtension($mime)
     {
         switch ($mime) {
             case 'application/pdf':
@@ -130,7 +130,7 @@ class Incoming
             case 'text/xml':
                 return 'xml';
             default:
-                throw new ExError('Invalid mime type: '.$mime);
+                throw new ExError('Invalid mime type: ' . $mime);
         }
     }
 
@@ -139,7 +139,7 @@ class Incoming
      *
      * @return array Request variables
      */
-    final public static function get()
+    public static function get()
     {
         return self::detachFile(self::decode($_GET));
     }
@@ -149,7 +149,7 @@ class Incoming
      *
      * @return array Request variables
      */
-    final public static function json()
+    public static function json()
     {
         if (is_null(self::$json)) {
             self::$json = Json::decode(self::payload(), false);
@@ -164,17 +164,15 @@ class Incoming
      *
      * @return array Request variables
      */
-    final public static function file()
+    public static function file()
     {
         return $_FILES;
     }
 
     /**
      * Get Payload.
-     *
-     * @return
      */
-    final public static function payload()
+    public static function payload()
     {
         if (is_null(self::$payload)) {
             self::$payload = file_get_contents('php://input');
@@ -188,7 +186,7 @@ class Incoming
      *
      * @return array Request variables
      */
-    final public static function post()
+    public static function post()
     {
         return self::detachFile($_POST);
     }

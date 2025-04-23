@@ -17,7 +17,7 @@ class Json
      *
      * @return array Returns and empty array if $json was not process correctly or the Json Data
      */
-    final public static function decode($json, $throwError = true)
+    public static function decode($json, $throwError = true)
     {
         $array = json_decode($json, true);
         $error = self::getMessageError();
@@ -36,9 +36,9 @@ class Json
      *
      * @return string
      */
-    final public static function getMessageError()
+    public static function getMessageError()
     {
-        if (json_last_error() === JSON_ERROR_NONE) {
+        if (JSON_ERROR_NONE === json_last_error()) {
             return null;
         }
 
@@ -71,7 +71,7 @@ class Json
      *
      * @return string Json encoded
      */
-    final public static function indent($json)
+    public static function indent($json)
     {
         $result = '';
         $pos = 0;
@@ -84,9 +84,9 @@ class Json
         for ($i = 0; $i < $strLen; ++$i) {
             $char = substr($json, $i, 1);
 
-            if ($char == '"' && $prevChar != '\\') {
+            if ('"' == $char && '\\' != $prevChar) {
                 $outOfQuotes = !$outOfQuotes;
-            } elseif (($char == '}' || $char == ']') && $outOfQuotes) {
+            } elseif (('}' == $char || ']' == $char) && $outOfQuotes) {
                 $result .= $newLine;
                 --$pos;
 
@@ -99,13 +99,13 @@ class Json
 
             $result .= $char;
 
-            if ($char == ':' && $outOfQuotes) {
+            if (':' == $char && $outOfQuotes) {
                 $result .= ' ';
             }
 
-            if (($char == ',' || $char == '{' || $char == '[') && $outOfQuotes) {
+            if ((',' == $char || '{' == $char || '[' == $char) && $outOfQuotes) {
                 $result .= $newLine;
-                if ($char == '{' || $char == '[') {
+                if ('{' == $char || '[' == $char) {
                     ++$pos;
                 }
 
@@ -127,7 +127,7 @@ class Json
      *
      * @return string JSON pretty print
      */
-    final public static function pretty($json)
+    public static function pretty($json)
     {
         if (version_compare(PHP_VERSION, '5.4', '>=')) {
             return json_encode($json, JSON_PRETTY_PRINT);
@@ -143,10 +143,10 @@ class Json
      *
      * @return array
      */
-    final public static function loadFile($file_path)
+    public static function loadFile($file_path)
     {
         if (!is_file($file_path)) {
-            return array();
+            return [];
         }
 
         return self::decode(file_get_contents($file_path));

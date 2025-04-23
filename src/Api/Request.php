@@ -24,7 +24,7 @@ class Request
     /**
      * Constructor.
      */
-    final public function __construct()
+    public function __construct()
     {
         $this->rid = (string) Uuid::uuid4();
 
@@ -101,7 +101,7 @@ class Request
         $request = (isset($_SERVER['HTTP_CONTENT_TYPE'])) ? $_SERVER['HTTP_CONTENT_TYPE'] : null;
 
         foreach ($content_types as $content_type) {
-            if (strpos($request, $content_type) !== false) {
+            if (false !== strpos($request, $content_type)) {
                 $this->content_type = $content_type;
             }
         }
@@ -114,7 +114,7 @@ class Request
      *
      * @return string Parameter value
      */
-    final public function __get($key)
+    public function __get($key)
     {
         return (isset($this->{$key})) ? $this->{$key} : null;
     }
@@ -124,14 +124,14 @@ class Request
      *
      * @return bool [description]
      */
-    final public function isAjax()
+    public function isAjax()
     {
-        if (strpos(strtolower($this->content_type), 'application/json') !== false) {
+        if (false !== strpos(strtolower($this->content_type), 'application/json')) {
             return true;
         }
 
         foreach (['X-Requested-With', 'Requested-With'] as $header) {
-            if (isset($this->headers[header]) && strtolower($this->headers[header]) === 'xmlhttprequest') {
+            if (isset($this->headers[header]) && 'xmlhttprequest' === strtolower($this->headers[header])) {
                 return true;
             }
         }
@@ -144,7 +144,7 @@ class Request
      *
      * @return string Request payload
      */
-    final public function getPayload()
+    public function getPayload()
     {
         return Incoming::payload();
     }
@@ -156,7 +156,7 @@ class Request
      *
      * @return string Header value
      */
-    final public function getHeader($key)
+    public function getHeader($key)
     {
         return (isset($this->headers[$key])) ? trim($this->headers[$key]) : null;
     }
@@ -168,7 +168,7 @@ class Request
      *
      * @return bool
      */
-    final public function isHeader($key)
+    public function isHeader($key)
     {
         return isset($this->headers[$key]);
     }
@@ -181,7 +181,7 @@ class Request
      *
      * @return any Parameter value
      */
-    final public function getParam($key, $return_object = false)
+    public function getParam($key, $return_object = false)
     {
         if ($return_object) {
             return (isset($this->parameters[$key])) ? $this->parameters[$key] : null;
@@ -195,7 +195,7 @@ class Request
      *
      * @return array Parameter values
      */
-    final public function getParameters()
+    public function getParameters()
     {
         $parameters = [];
         foreach ($this->parameters as $key => $parameter) {
@@ -213,7 +213,7 @@ class Request
      *
      * @return bool
      */
-    final public function isParam($key, $method = null)
+    public function isParam($key, $method = null)
     {
         if (is_null($method)) {
             return isset($this->parameters[$key]);
@@ -227,7 +227,7 @@ class Request
      *
      * @param string $key Parameter name
      */
-    final public function removeParam($key)
+    public function removeParam($key)
     {
         unset($this->parameters[$key]);
     }
@@ -239,7 +239,7 @@ class Request
      * @param any    $value  Parameter value
      * @param string $method Set method
      */
-    final public function setParam($key, $value, $method = 'SET')
+    public function setParam($key, $value, $method = 'SET')
     {
         $this->parameters[$key] = [
             'method' => $method,
@@ -253,9 +253,9 @@ class Request
      * @param string $replace Search for
      * @param string $with    Replace with
      */
-    final public function replaceURL($replace, $with)
+    public function replaceURL($replace, $with)
     {
-        $this->uri = str_replace($replace, $with, '/'.implode('/', $this->uri));
+        $this->uri = str_replace($replace, $with, '/' . implode('/', $this->uri));
         $this->uri = parse_url(filter_var($this->uri, FILTER_SANITIZE_URL));
         $this->uri = preg_split('[\\/]', $this->uri['path'], -1, PREG_SPLIT_NO_EMPTY);
     }

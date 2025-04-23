@@ -2,9 +2,9 @@
 
 namespace Sparky7\Orm;
 
-use Sparky7\Orm\Qb\MongoDB;
 use Exception;
 use OuterIterator;
+use Sparky7\Orm\Qb\MongoDB;
 
 /**
  * Collection class.
@@ -39,10 +39,10 @@ abstract class Collection implements OuterIterator
      *
      * @return any
      */
-    final public function __call($method, array $arguments = null)
+    public function __call($method, ?array $arguments = null)
     {
         if (is_callable([$this->QB, $method])) {
-            if ($method === 'find') {
+            if ('find' === $method) {
                 $this->Iterator = call_user_func_array([$this->QB, $method], $arguments);
             } else {
                 return call_user_func_array([$this->QB, $method], $arguments);
@@ -63,12 +63,12 @@ abstract class Collection implements OuterIterator
     /**
      * Init class.
      */
-    final public function init()
+    public function init()
     {
         // Select Query Builder
-        if (get_class($this->MongoDB) === 'MongoDB\Database') {
-            $this->QB = new Qb\MongoDB($this->MongoDB, $this->collection);
-        } elseif (get_class($this->MongoDB) === 'MongoDB') {
+        if ('MongoDB\Database' === get_class($this->MongoDB)) {
+            $this->QB = new MongoDB($this->MongoDB, $this->collection);
+        } elseif ('MongoDB' === get_class($this->MongoDB)) {
             $this->QB = new Qb\Mongo($this->MongoDB, $this->collection);
         } else {
             throw new Exception('Invalid mongo database');
@@ -87,7 +87,7 @@ abstract class Collection implements OuterIterator
      *
      * @return object Entity
      */
-    final public function entity()
+    public function entity()
     {
         return new $this->entity($this->MongoDB->{$this->collection}, []);
     }
@@ -113,7 +113,7 @@ abstract class Collection implements OuterIterator
      */
     public function getNext()
     {
-        if (get_class($this->MongoDB) === 'MongoDB') {
+        if ('MongoDB' === get_class($this->MongoDB)) {
             $this->next();
         }
 
@@ -124,8 +124,6 @@ abstract class Collection implements OuterIterator
 
     /**
      * Get the current value.
-     *
-     * @return mixed
      */
     public function current()
     {
@@ -147,7 +145,7 @@ abstract class Collection implements OuterIterator
      *
      * @return int Iterator key
      */
-    final public function key()
+    public function key()
     {
         return $this->Iterator->key();
     }
@@ -157,7 +155,7 @@ abstract class Collection implements OuterIterator
      *
      * @return bool
      */
-    final public function next()
+    public function next()
     {
         return $this->Iterator->next();
     }
@@ -167,7 +165,7 @@ abstract class Collection implements OuterIterator
      *
      * @return bool
      */
-    final public function rewind()
+    public function rewind()
     {
         return $this->Iterator->rewind();
     }
@@ -177,7 +175,7 @@ abstract class Collection implements OuterIterator
      *
      * @return bool
      */
-    final public function valid()
+    public function valid()
     {
         return $this->Iterator->valid();
     }
@@ -187,7 +185,7 @@ abstract class Collection implements OuterIterator
      *
      * @return [type] Iterator
      */
-    final public function getInnerIterator()
+    public function getInnerIterator()
     {
         return $this->Iterator;
     }

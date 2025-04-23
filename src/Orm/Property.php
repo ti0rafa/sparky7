@@ -22,7 +22,7 @@ class Property
      * @param string $type    Property type
      * @param any    $default Default value
      */
-    final public function __construct($type, $default = null)
+    public function __construct($type, $default = null)
     {
         $this->alias = null;
         $this->default = $default;
@@ -39,7 +39,7 @@ class Property
      *
      * @return array Debug array
      */
-    final public function __debugInfo()
+    public function __debugInfo()
     {
         return [
             'method' => $this->method,
@@ -55,7 +55,7 @@ class Property
      *
      * @return any Property Value
      */
-    final public function __get($key)
+    public function __get($key)
     {
         return (isset($this->{$key})) ? $this->{$key} : null;
     }
@@ -66,7 +66,7 @@ class Property
      * @param any    $value  Property value
      * @param string $method Set method
      */
-    final public function set($value, $method = 'set')
+    public function set($value, $method = 'set')
     {
         $this->previous = $this->value;
         $this->value = $value;
@@ -80,7 +80,7 @@ class Property
      *
      * @param string $alias Alias
      */
-    final public function alias($alias)
+    public function alias($alias)
     {
         $this->alias = $alias;
 
@@ -92,7 +92,7 @@ class Property
      *
      * @param string $method Method
      */
-    final public function method($method)
+    public function method($method)
     {
         $this->method = $method;
 
@@ -102,7 +102,7 @@ class Property
     /**
      * Set property as ignore.
      */
-    final public function ignore()
+    public function ignore()
     {
         $this->ignore = !$this->ignore;
 
@@ -112,7 +112,7 @@ class Property
     /**
      * Export scalar value.
      */
-    final public function export()
+    public function export()
     {
         return Validator::export($this->type, $this->value);
     }
@@ -120,7 +120,7 @@ class Property
     /**
      * Set property as required.
      */
-    final public function required()
+    public function required()
     {
         $this->required = !$this->required;
 
@@ -130,7 +130,7 @@ class Property
     /**
      * Sanitize property.
      */
-    final public function sanitize()
+    public function sanitize()
     {
         $this->value = Validator::sanitize($this->type, $this->value);
 
@@ -140,7 +140,7 @@ class Property
     /**
      * Validate property.
      */
-    final public function validate()
+    public function validate()
     {
         $this->value = Validator::validate($this->type, $this->value, $this->required, $this->default);
 

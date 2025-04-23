@@ -2,8 +2,8 @@
 
 namespace Sparky7\Logger;
 
-use Ramsey\Uuid\Uuid;
 use Exception;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Logger class.
@@ -22,7 +22,7 @@ class Logger
     /**
      * Construct method.
      */
-    final public function __construct()
+    public function __construct()
     {
         $this->handlers = [];
 
@@ -32,7 +32,7 @@ class Logger
     /**
      * Clear data.
      */
-    final public function clear()
+    public function clear()
     {
         $this->pid = (string) Uuid::uuid4();
         $this->count = 0;
@@ -50,7 +50,7 @@ class Logger
      * @param array  $context   Context data
      * @param array  $notifiers Selected Notifier
      */
-    final private function process($level, $message, array $context = null, array $notifiers = null)
+    private function process($level, $message, ?array $context = null, ?array $notifiers = null)
     {
         // Sanitize parameters
         $context = (is_array($context)) ? $context : [];
@@ -91,7 +91,7 @@ class Logger
      * @param string       $name         Notify handler name
      * @param LoggerNotify $LoggerNotify Notification object
      */
-    final public function addNotifier($name, LoggerNotify $LoggerNotify)
+    public function addNotifier($name, LoggerNotify $LoggerNotify)
     {
         $this->handlers[$name] = $LoggerNotify;
     }
@@ -101,7 +101,7 @@ class Logger
      *
      * @param string $name Notify handler name
      */
-    final public function removeNotifier($name)
+    public function removeNotifier($name)
     {
         if (isset($this->handlers[$name])) {
             unset($this->handlers[$name]);
@@ -111,10 +111,9 @@ class Logger
     /**
      * Adds a tag.
      *
-     * @param string $tag   Tag name
      * @param string $value Tag value
      */
-    final public function addTag($key, $value)
+    public function addTag($key, $value)
     {
         if (!is_array($this->tags)) {
             $this->tags = [];
@@ -129,10 +128,8 @@ class Logger
 
     /**
      * Removes a tag.
-     *
-     * @param string $tag Tag name
      */
-    final public function removeTag($value)
+    public function removeTag($value)
     {
         foreach ($this->tags as $key => $tag) {
             if ($tag == $value) {
@@ -145,7 +142,7 @@ class Logger
     /**
      * Clears all tags.
      */
-    final public function clearTags()
+    public function clearTags()
     {
         $this->tags = [];
         $this->tags[] = $this->pid;
@@ -158,7 +155,7 @@ class Logger
      * @param array  $context   Context data
      * @param array  $notifiers Selected Notifier
      */
-    final public function alert($message, array $context = null, array $notifiers = null)
+    public function alert($message, ?array $context = null, ?array $notifiers = null)
     {
         $this->process(__FUNCTION__, $message, $context, $notifiers);
     }
@@ -170,7 +167,7 @@ class Logger
      * @param array  $context   Context data
      * @param array  $notifiers Selected Notifier
      */
-    final public function critical($message, array $context = null, array $notifiers = null)
+    public function critical($message, ?array $context = null, ?array $notifiers = null)
     {
         $this->process(__FUNCTION__, $message, $context, $notifiers);
     }
@@ -182,7 +179,7 @@ class Logger
      * @param array  $context   Log context data
      * @param array  $notifiers Selected Notifier
      */
-    final public function emergency($message, array $context = null, array $notifiers = null)
+    public function emergency($message, ?array $context = null, ?array $notifiers = null)
     {
         $this->process(__FUNCTION__, $message, $context, $notifiers);
     }
@@ -194,7 +191,7 @@ class Logger
      * @param array  $context   Context data
      * @param array  $notifiers Selected Notifier
      */
-    final public function debug($message, array $context = null, array $notifiers = null)
+    public function debug($message, ?array $context = null, ?array $notifiers = null)
     {
         $this->process(__FUNCTION__, $message, $context, $notifiers);
     }
@@ -206,7 +203,7 @@ class Logger
      * @param array  $context   Context data
      * @param array  $notifiers Selected Notifier
      */
-    final public function error($message, array $context = null, array $notifiers = null)
+    public function error($message, ?array $context = null, ?array $notifiers = null)
     {
         $this->process(__FUNCTION__, $message, $context, $notifiers);
     }
@@ -218,7 +215,7 @@ class Logger
      * @param array  $context   Context data
      * @param array  $notifiers Selected Notifier
      */
-    final public function info($message, array $context = null, array $notifiers = null)
+    public function info($message, ?array $context = null, ?array $notifiers = null)
     {
         $this->process(__FUNCTION__, $message, $context, $notifiers);
     }
@@ -230,7 +227,7 @@ class Logger
      * @param array  $context   Context data
      * @param array  $notifiers Selected Notifier
      */
-    final public function notice($message, array $context = null, array $notifiers = null)
+    public function notice($message, ?array $context = null, ?array $notifiers = null)
     {
         $this->process(__FUNCTION__, $message, $context, $notifiers);
     }
@@ -242,7 +239,7 @@ class Logger
      * @param array  $context   Context data
      * @param array  $notifiers Selected Notifier
      */
-    final public function warning($message, array $context = null, array $notifiers = null)
+    public function warning($message, ?array $context = null, ?array $notifiers = null)
     {
         $this->process(__FUNCTION__, $message, $context, $notifiers);
     }

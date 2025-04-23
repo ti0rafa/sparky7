@@ -2,9 +2,9 @@
 
 namespace Sparky7\Logger\Notify;
 
+use MongoDB\Database;
 use Sparky7\Logger\LoggerNotify;
 use Sparky7\Orm\Mongo as MongoWrapper;
-use MongoDB\Database;
 
 /**
  * Mongo handler.
@@ -22,7 +22,7 @@ class Mongo extends LoggerNotify
      * @param string  $collection_uuid Collection UUID
      * @param string  $collection      Collection
      */
-    final public function __construct(Database $MongoDb, $collection_uuid = 'log_uuid', $collection = 'log')
+    public function __construct(Database $MongoDb, $collection_uuid = 'log_uuid', $collection = 'log')
     {
         $this->MongoDb = $MongoDb;
 
@@ -33,7 +33,7 @@ class Mongo extends LoggerNotify
     /**
      * Sends log notification.
      */
-    final public function send()
+    public function send()
     {
         $document = $this->MongoDb->{$this->collection_uuid}->findOne([
             'pid' => $this->pid,

@@ -16,7 +16,7 @@ class ErrorHandler
     /**
      * Constructor sets basic data.
      */
-    final public function __construct(Closure $callback)
+    public function __construct(Closure $callback)
     {
         $this->callback = $callback;
         $this->debug_info = [];
@@ -27,7 +27,7 @@ class ErrorHandler
      *
      * @return array
      */
-    final public function __debugInfo()
+    public function __debugInfo()
     {
         return $this->debug_info;
     }
@@ -37,15 +37,15 @@ class ErrorHandler
      *
      * @return string Error
      */
-    final public function __toString()
+    public function __toString()
     {
-        return $this->debug_info['error']['message'].' on '.$this->debug_info['error']['file'];
+        return $this->debug_info['error']['message'] . ' on ' . $this->debug_info['error']['file'];
     }
 
     /**
      * Invokes callback after error and stops execution.
      */
-    final public function afterError()
+    public function afterError()
     {
         if (is_callable($this->callback)) {
             $this->callback->__invoke($this->__debugInfo());
@@ -60,11 +60,11 @@ class ErrorHandler
      * @param string $file    File that caused the error
      * @param string $line    Line of the error
      */
-    final public function onError($code, $message, $file = '', $line = '')
+    public function onError($code, $message, $file = '', $line = '')
     {
         $this->debug_info['error']['type'] = 'Error';
         $this->debug_info['error']['code'] = 500;
-        $this->debug_info['error']['file'] = $file.' ('.$line.')';
+        $this->debug_info['error']['file'] = $file . ' (' . $line . ')';
         $this->debug_info['error']['message'] = $message;
         $this->debug_info['error']['server'] = gethostname();
 
@@ -80,7 +80,7 @@ class ErrorHandler
      *
      * @param Catchable $Catchable Catchable thrown
      */
-    final public function onException($Catchable)
+    public function onException($Catchable)
     {
         // $code = ($Catchable instanceof \Sparky7\Error\Exception) ? $Catchable->getCode() : 500;
 
@@ -89,7 +89,7 @@ class ErrorHandler
         $this->debug_info['error']['type'] = 'Exceptions';
         $this->debug_info['error']['exception'] = get_class($Catchable);
         $this->debug_info['error']['code'] = $code;
-        $this->debug_info['error']['file'] = $Catchable->getFile().' ('.$Catchable->getLine().')';
+        $this->debug_info['error']['file'] = $Catchable->getFile() . ' (' . $Catchable->getLine() . ')';
         $this->debug_info['error']['message'] = $Catchable->getMessage();
         $this->debug_info['error']['server'] = gethostname();
 
@@ -100,7 +100,7 @@ class ErrorHandler
         $Previous = $Catchable->getPrevious();
         if ($Previous) {
             $this->debug_info['previous']['exception'] = get_class($Previous);
-            $this->debug_info['previous']['file'] = $Previous->getFile().' ('.$Previous->getLine().')';
+            $this->debug_info['previous']['file'] = $Previous->getFile() . ' (' . $Previous->getLine() . ')';
             $this->debug_info['previous']['message'] = $Previous->getMessage();
         }
 
@@ -124,14 +124,14 @@ class ErrorHandler
     /**
      * Shutdown handler checks to see if any error was thrown.
      */
-    final public function onShutdown()
+    public function onShutdown()
     {
         $error = error_get_last();
 
         if (!is_null($error)) {
             $this->debug_info['error']['type'] = 'Error';
             $this->debug_info['error']['code'] = 500;
-            $this->debug_info['error']['file'] = $error['file'].' ('.$error['line'].')';
+            $this->debug_info['error']['file'] = $error['file'] . ' (' . $error['line'] . ')';
             $this->debug_info['error']['message'] = $error['message'];
             $this->debug_info['error']['server'] = gethostname();
 
@@ -146,10 +146,10 @@ class ErrorHandler
     /**
      * Register default handlers.
      */
-    final public function register()
+    public function register()
     {
-        set_error_handler(array($this, 'onError'));
-        set_exception_handler(array($this, 'onException'));
-        register_shutdown_function(array($this, 'onShutdown'));
+        set_error_handler([$this, 'onError']);
+        set_exception_handler([$this, 'onException']);
+        register_shutdown_function([$this, 'onShutdown']);
     }
 }

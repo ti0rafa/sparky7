@@ -2,10 +2,10 @@
 
 namespace Sparky7\Worker\Protocol;
 
+use Closure;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 use Sparky7\Worker\Protocol;
-use Closure;
 
 /**
  * Wrapper for PhpAmqpLib.
@@ -24,10 +24,10 @@ class PhpAmqpLib implements Protocol
      * Construct.
      *
      * @param AMQPStreamConnection $AMQPStreamConnection Object
-     * @param $exchange_name String Exchange name
-     * @param $queue_name String Queue name
+     * @param                      $exchange_name        String Exchange name
+     * @param                      $queue_name           String Queue name
      */
-    final public function __construct(AMQPStreamConnection $AMQPStreamConnection, $exchange_name, $queue_name, $routing_key, array $queue_arguments = null)
+    public function __construct(AMQPStreamConnection $AMQPStreamConnection, $exchange_name, $queue_name, $routing_key, ?array $queue_arguments = null)
     {
         $this->exchange_name = $exchange_name;
         $this->queue_name = $queue_name;
@@ -50,7 +50,7 @@ class PhpAmqpLib implements Protocol
      *
      * @return bool
      */
-    final public function publish($message, array $attributes = [])
+    public function publish($message, array $attributes = [])
     {
         // Set delivery mode
         if (!isset($attributes['delivery_mode'])) {
@@ -69,7 +69,7 @@ class PhpAmqpLib implements Protocol
      *
      * @return bool
      */
-    final public function acknowledge($tag)
+    public function acknowledge($tag)
     {
         return $this->AMQPChannel->basic_ack($tag);
     }
@@ -98,7 +98,7 @@ class PhpAmqpLib implements Protocol
      *
      * @return bool
      */
-    final public function reject($tag, $requeue = false)
+    public function reject($tag, $requeue = false)
     {
         return $this->AMQPChannel->basic_reject($tag, false, $requeue);
     }
@@ -108,7 +108,7 @@ class PhpAmqpLib implements Protocol
      *
      * @return int
      */
-    final public function haveMessages()
+    public function haveMessages()
     {
         return count($this->AMQPChannel->callbacks);
     }
@@ -118,7 +118,7 @@ class PhpAmqpLib implements Protocol
      *
      * @return bool
      */
-    final public function wait()
+    public function wait()
     {
         return $this->AMQPChannel->wait();
     }

@@ -25,7 +25,7 @@ class APIResponse extends Response
     /**
      * Construct.
      */
-    final public function __construct()
+    public function __construct()
     {
         $this->code = 200;
         $this->status = true;
@@ -37,7 +37,7 @@ class APIResponse extends Response
      *
      * @return array Response
      */
-    final public function toArray()
+    public function toArray()
     {
         return [
             'rid' => $this->rid,
@@ -52,7 +52,7 @@ class APIResponse extends Response
     /**
      * Not found - set response to not found.
      */
-    final public function notFound()
+    public function notFound()
     {
         $this->code = 404;
         $this->errors = null;
@@ -63,10 +63,8 @@ class APIResponse extends Response
 
     /**
      * Format response into JSON.
-     *
-     * @param bool $die End on output
      */
-    final public function format()
+    public function format()
     {
         return ($this->pretty) ? Json::indent(json_encode($this->toArray())) : json_encode($this->toArray());
     }
@@ -76,7 +74,7 @@ class APIResponse extends Response
      *
      * @return array Headers
      */
-    final public function getHeaders()
+    public function getHeaders()
     {
         $this->headers = [
             'Access-Control-Allow-Origin: *',
@@ -86,12 +84,12 @@ class APIResponse extends Response
             'Cache-Control: max-age=0, no-store, no-cache, post-check=0, pre-check=0',
             'Content-Type: application/json; charset=utf-8',
             'Expires: Mon, 26 Jul 1997 05:00:00 GMT',
-            'Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT',
+            'Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT',
             'Pragma: no-cache',
         ];
 
         if (!is_null($this->rid)) {
-            $this->headers[] = 'Request-ID: '.$this->rid;
+            $this->headers[] = 'Request-ID: ' . $this->rid;
         }
 
         return $this->headers;
@@ -99,10 +97,8 @@ class APIResponse extends Response
 
     /**
      * Send Headers.
-     *
-     * @param array $overwrite_headers Overwrite headers
      */
-    final public function sendHeaders()
+    public function sendHeaders()
     {
         if (headers_sent() || !in_array((int) $this->code, [200, 203, 204, 400, 401, 402, 403, 404, 500, 501, 503])) {
             return;

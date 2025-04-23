@@ -18,7 +18,7 @@ class Exception extends \Exception
      * @param array|null $errors  Errors list
      * @param array|null $context Context
      */
-    public function __construct($message, $code, array $errors = null, array $context = null)
+    public function __construct($message, $code, ?array $errors = null, ?array $context = null)
     {
         parent::__construct($message, $code);
 
@@ -31,7 +31,7 @@ class Exception extends \Exception
      *
      * @return array Context
      */
-    final public function getContext()
+    public function getContext()
     {
         return $this->context;
     }
@@ -41,7 +41,7 @@ class Exception extends \Exception
      *
      * @return array Errors
      */
-    final public function getErrors()
+    public function getErrors()
     {
         return $this->errors;
     }

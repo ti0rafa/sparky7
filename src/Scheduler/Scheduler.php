@@ -2,11 +2,11 @@
 
 namespace Sparky7\Scheduler;
 
-use Sparky7\Event\Emitter;
-use Sparky7\Helper\Timer;
-use Sparky7\Helper\Memory;
 use DateTime;
 use DateTimeZone;
+use Sparky7\Event\Emitter;
+use Sparky7\Helper\Memory;
+use Sparky7\Helper\Timer;
 
 /**
  * Scheduler.
@@ -24,7 +24,7 @@ class Scheduler
     /**
      * Constructor.
      */
-    final public function __construct()
+    public function __construct()
     {
         $this->default_jobs = [];
         $this->jobs = [];
@@ -39,7 +39,7 @@ class Scheduler
      * @param string $file    File path
      * @param int    $timeout Timeout in seconds
      */
-    final public function notFound($file, $timeout = 60)
+    public function notFound($file, $timeout = 60)
     {
         $this->default_jobs[] = [
             'file' => $file,
@@ -56,7 +56,7 @@ class Scheduler
      * @param int    $timeout Timeout in seconds
      * @param bool   $stop    Stop once run
      */
-    final public function runAt(array $at, $file, $timeout = 60, $stop = true)
+    public function runAt(array $at, $file, $timeout = 60, $stop = true)
     {
         foreach ($at as $time) {
             $time = explode(':', $time);
@@ -72,7 +72,7 @@ class Scheduler
     /**
      * Run.
      */
-    final public function run()
+    public function run()
     {
         global $DI;
 
@@ -86,7 +86,7 @@ class Scheduler
 
         // Run each cron
         foreach ($files as $key => $value) {
-            if (!is_file($this->default_path.DIRECTORY_SEPARATOR.$value['file'])) {
+            if (!is_file($this->default_path . DIRECTORY_SEPARATOR . $value['file'])) {
                 continue;
             }
 
@@ -97,7 +97,7 @@ class Scheduler
 
             $this->emit('before.run', [$value['file']]);
 
-            require_once $this->default_path.DIRECTORY_SEPARATOR.$value['file'];
+            require_once $this->default_path . DIRECTORY_SEPARATOR . $value['file'];
 
             $elapsed = $Timer->elapsed();
 
@@ -114,7 +114,7 @@ class Scheduler
      *
      * @param string $path File path
      */
-    final public function setPath($path)
+    public function setPath($path)
     {
         $this->default_path = $path;
     }
@@ -124,7 +124,7 @@ class Scheduler
      *
      * @param string $time_zone Time Zone
      */
-    final public function setTimeZone($time_zone = 'UTC')
+    public function setTimeZone($time_zone = 'UTC')
     {
         $DateTime = new DateTime('now', new DateTimeZone($time_zone));
 

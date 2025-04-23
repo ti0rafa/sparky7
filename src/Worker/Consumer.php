@@ -16,7 +16,7 @@ class Consumer
      *
      * @param Protocol $Protocol Protocol Object
      */
-    final public function __construct(Protocol $Protocol)
+    public function __construct(Protocol $Protocol)
     {
         $this->Protocol = $Protocol;
     }
@@ -26,7 +26,7 @@ class Consumer
      *
      * @param Closure $Closure Callback
      */
-    final public function consume(Closure $Closure)
+    public function consume(Closure $Closure)
     {
         return $this->Protocol->consume($Closure);
     }
@@ -36,7 +36,7 @@ class Consumer
      *
      * @return bool
      */
-    final public function wait()
+    public function wait()
     {
         $this->Protocol->wait();
     }
@@ -48,7 +48,7 @@ class Consumer
      *
      * @return bool
      */
-    final public function acknowledge($tag)
+    public function acknowledge($tag)
     {
         return $this->Protocol->acknowledge($tag);
     }
@@ -61,7 +61,7 @@ class Consumer
      *
      * @return bool
      */
-    final public function reject($tag, $requeue = false)
+    public function reject($tag, $requeue = false)
     {
         return $this->Protocol->reject($tag, $requeue);
     }

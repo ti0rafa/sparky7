@@ -13,7 +13,7 @@ class Mongo
      *
      * @return object Mongo ID Object
      */
-    final public static function id($value = null)
+    public static function id($value = null)
     {
         if (is_object($value) && is_a($value, 'MongoDB\BSON\ObjectId')) {
             return $value;
@@ -35,11 +35,9 @@ class Mongo
     /**
      * Validate and return a Mongo BSON Date.
      *
-     * @param int $timestamp Timestamp
-     *
      * @return object Mongo ID Object
      */
-    final public static function date($value = null)
+    public static function date($value = null)
     {
         if (is_object($value) && is_a($value, 'MongoDB\BSON\UTCDateTime')) {
             return $value;

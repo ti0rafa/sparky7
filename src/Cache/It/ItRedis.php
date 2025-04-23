@@ -19,7 +19,7 @@ class ItRedis implements CacheInterface
      * @param Redis $Redis Redis connection
      * @param int   $ttl   Time to live
      */
-    final public function __construct(Redis $Redis, $ttl)
+    public function __construct(Redis $Redis, $ttl)
     {
         $this->Redis = $Redis;
 
@@ -34,7 +34,7 @@ class ItRedis implements CacheInterface
      *
      * @return any Key Value
      */
-    final public function get($key, $default = null)
+    public function get($key, $default = null)
     {
         if (!$this->has($key)) {
             return $default;
@@ -52,7 +52,7 @@ class ItRedis implements CacheInterface
      * @param any    $value Key value
      * @param int    $ttl   Time to live
      */
-    final public function set($key, $value, $ttl = null)
+    public function set($key, $value, $ttl = null)
     {
         if (is_null($ttl)) {
             $ttl = $this->ttl;
@@ -66,7 +66,7 @@ class ItRedis implements CacheInterface
      *
      * @param string $key Key
      */
-    final public function delete($key)
+    public function delete($key)
     {
         return $this->Redis->delete($key);
     }
@@ -74,7 +74,7 @@ class ItRedis implements CacheInterface
     /**
      * Clear all keys.
      */
-    final public function clear()
+    public function clear()
     {
         return $this->Redis->flushDb();
     }
@@ -87,7 +87,7 @@ class ItRedis implements CacheInterface
      *
      * @return Iterator Key values
      */
-    final public function getMultiple($keys, $default = null)
+    public function getMultiple($keys, $default = null)
     {
         $Iterator = [];
         foreach ($keys as $key) {
@@ -103,7 +103,7 @@ class ItRedis implements CacheInterface
      * @param Iterator $keys Keys
      * @param int      $ttl  Time to live
      */
-    final public function setMultiple($keys, $ttl = null)
+    public function setMultiple($keys, $ttl = null)
     {
         foreach ($keys as $key) {
             $this->set($key, $ttl);
@@ -117,7 +117,7 @@ class ItRedis implements CacheInterface
      *
      * @param Iterator $keys Keys
      */
-    final public function deleteMultiple($keys)
+    public function deleteMultiple($keys)
     {
         foreach ($keys as $key) {
             $this->delete($key, $ttl);
@@ -131,7 +131,7 @@ class ItRedis implements CacheInterface
      *
      * @param string $key Key
      */
-    final public function has($key)
+    public function has($key)
     {
         return $this->Redis->exists($key);
     }

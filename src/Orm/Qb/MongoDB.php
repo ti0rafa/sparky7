@@ -3,9 +3,9 @@
 namespace Sparky7\Orm\Qb;
 
 use IteratorIterator;
-use MongoDB\Database;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
+use MongoDB\Database;
 use Sparky7\Event\Emitter;
 
 /**
@@ -27,7 +27,7 @@ class MongoDB
      * @param Database $DataBase   DataBase object
      * @param string   $collection Collection name
      */
-    final public function __construct(Database $DataBase, $collection)
+    public function __construct(Database $DataBase, $collection)
     {
         /*
          * Parameters
@@ -46,7 +46,7 @@ class MongoDB
     /**
      * Clear Query Options.
      */
-    final public function clearQueryOptions()
+    public function clearQueryOptions()
     {
         $this->query = [];
         $this->options = [];
@@ -55,11 +55,9 @@ class MongoDB
     /**
      * Sanitize multiple values.
      *
-     * @param any $raw_variable Raw data
-     *
      * @return array Sanitize variable
      */
-    final public function sanitize($raw_data)
+    public function sanitize($raw_data)
     {
         if (is_array($raw_data)) {
             $count_ignore = 0;
@@ -90,7 +88,7 @@ class MongoDB
      *
      * @return array Sanitize variable
      */
-    final public function sanitizeValue($raw_value)
+    public function sanitizeValue($raw_value)
     {
         /*
          * Sanitize if value is controller parameter
@@ -136,17 +134,12 @@ class MongoDB
      *
      * @return cursor Cursor
      */
-    final public function aggregate(array $pipeline = [], array $options = [])
+    public function aggregate(array $pipeline = [], array $options = [])
     {
         try {
             return $this->DataBase->{$this->collection}->aggregate($pipeline, $options);
         } catch (Exception $Exception) {
-            throw new OrmException($Exception->getMessage(), $Exception->getCode(), [
-                'method' => __METHOD__,
-                'collection' => $this->collection,
-                'pipeline' => $pipeline,
-                'options' => $options,
-            ]);
+            throw new OrmException($Exception->getMessage(), $Exception->getCode(), ['method' => __METHOD__, 'collection' => $this->collection, 'pipeline' => $pipeline, 'options' => $options]);
         }
     }
 
@@ -158,7 +151,7 @@ class MongoDB
      *
      * @return int Count
      */
-    final public function count(array $query = [], array $options = [])
+    public function count(array $query = [], array $options = [])
     {
         /*
          * Parameters
@@ -174,12 +167,7 @@ class MongoDB
         try {
             $count = $this->DataBase->{$this->collection}->count($query, $options);
         } catch (Exception $Exception) {
-            throw new OrmException($Exception->getMessage(), $Exception->getCode(), [
-                'method' => __METHOD__,
-                'collection' => $this->collection,
-                'query' => $query,
-                'options' => $options,
-            ]);
+            throw new OrmException($Exception->getMessage(), $Exception->getCode(), ['method' => __METHOD__, 'collection' => $this->collection, 'query' => $query, 'options' => $options]);
         }
 
         /*
@@ -199,7 +187,7 @@ class MongoDB
      *
      * @return bool Exists
      */
-    final public function exists(array $query = [], array $options = [])
+    public function exists(array $query = [], array $options = [])
     {
         return ($this->count($query, $options) > 0) ? true : false;
     }
@@ -212,7 +200,7 @@ class MongoDB
      *
      * @return Iterator Iterator
      */
-    final public function find(array $query = [], array $options = [])
+    public function find(array $query = [], array $options = [])
     {
         /*
          * Parameters
@@ -237,12 +225,7 @@ class MongoDB
         try {
             $cursor = $this->DataBase->{$this->collection}->find($query, $options);
         } catch (Exception $Exception) {
-            throw new OrmException($Exception->getMessage(), $Exception->getCode(), [
-                'method' => __METHOD__,
-                'collection' => $this->collection,
-                'query' => $query,
-                'options' => $options,
-            ]);
+            throw new OrmException($Exception->getMessage(), $Exception->getCode(), ['method' => __METHOD__, 'collection' => $this->collection, 'query' => $query, 'options' => $options]);
         }
 
         /*
@@ -269,7 +252,7 @@ class MongoDB
      *
      * @return array Document
      */
-    final public function findOne(array $query = [], array $options = [])
+    public function findOne(array $query = [], array $options = [])
     {
         /*
          * Parameters
@@ -294,12 +277,7 @@ class MongoDB
         try {
             $result = $this->DataBase->{$this->collection}->findOne($query, $options);
         } catch (Exception $Exception) {
-            throw new OrmException($Exception->getMessage(), $Exception->getCode(), [
-                'method' => __METHOD__,
-                'collection' => $this->collection,
-                'query' => $query,
-                'options' => $options,
-            ]);
+            throw new OrmException($Exception->getMessage(), $Exception->getCode(), ['method' => __METHOD__, 'collection' => $this->collection, 'query' => $query, 'options' => $options]);
         }
 
         /*
@@ -318,7 +296,7 @@ class MongoDB
      *
      * @return object This Objet
      */
-    final public function select($raw_value)
+    public function select($raw_value)
     {
         /*
          * Sanitize value
@@ -359,7 +337,7 @@ class MongoDB
      *
      * @return object This Object
      */
-    final public function limit($raw_value)
+    public function limit($raw_value)
     {
         /*
          * Sanitize value
@@ -391,7 +369,7 @@ class MongoDB
      *
      * @return object This object
      */
-    final public function skip($raw_value)
+    public function skip($raw_value)
     {
         /*
          * Sanitize value
@@ -423,7 +401,7 @@ class MongoDB
      *
      * @return object This object
      */
-    final public function sort($raw_value)
+    public function sort($raw_value)
     {
         /*
          * Sanitize value
@@ -465,7 +443,7 @@ class MongoDB
      *
      * @return object This object
      */
-    final public function order($field)
+    public function order($field)
     {
         return $this->sort($field);
     }
@@ -478,7 +456,7 @@ class MongoDB
      *
      * @return object This object
      */
-    final public function where($field, $raw_value = null)
+    public function where($field, $raw_value = null)
     {
         /*
          * Sanitize value
@@ -509,7 +487,7 @@ class MongoDB
      *
      * @return object This object
      */
-    final public function whereNe($field, $raw_value = null)
+    public function whereNe($field, $raw_value = null)
     {
         /*
          * Sanitize value
@@ -537,11 +515,10 @@ class MongoDB
      *
      * @param string $field     Field name
      * @param any    $raw_value Field value
-     * @param string $type      Field type
      *
      * @return object This object
      */
-    final public function whereGt($field, $raw_value = null)
+    public function whereGt($field, $raw_value = null)
     {
         /*
          * Sanitize value
@@ -572,7 +549,7 @@ class MongoDB
      *
      * @return object This object
      */
-    final public function whereGte($field, $raw_value = null)
+    public function whereGte($field, $raw_value = null)
     {
         /*
          * Sanitize value
@@ -603,7 +580,7 @@ class MongoDB
      *
      * @return object This object
      */
-    final public function whereLt($field, $raw_value = null)
+    public function whereLt($field, $raw_value = null)
     {
         /*
          * Sanitize value
@@ -634,7 +611,7 @@ class MongoDB
      *
      * @return object This object
      */
-    final public function whereLte($field, $raw_value = null)
+    public function whereLte($field, $raw_value = null)
     {
         /*
          * Sanitize value
@@ -665,7 +642,7 @@ class MongoDB
      *
      * @return object This Object
      */
-    final public function whereIn($field, array $raw_value)
+    public function whereIn($field, array $raw_value)
     {
         /*
          * Sanitize value
@@ -696,7 +673,7 @@ class MongoDB
      *
      * @return object This Object
      */
-    final public function whereAll($field, array $raw_value)
+    public function whereAll($field, array $raw_value)
     {
         /*
          * Sanitize value
@@ -727,7 +704,7 @@ class MongoDB
      *
      * @return object This object
      */
-    final public function whereNin($field, array $raw_value)
+    public function whereNin($field, array $raw_value)
     {
         /*
          * Sanitize value
@@ -758,7 +735,7 @@ class MongoDB
      *
      * @return object This object
      */
-    final public function whereOr($field, $raw_value)
+    public function whereOr($field, $raw_value)
     {
         /*
          * Sanitize value

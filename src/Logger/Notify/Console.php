@@ -23,7 +23,7 @@ class Console extends LoggerNotify
     /**
      * Sends log notification.
      */
-    final public function send()
+    public function send()
     {
         switch ($this->level) {
             case 'notice':
@@ -43,8 +43,8 @@ class Console extends LoggerNotify
         }
 
         $output = PHP_EOL;
-        $output .= CLI::addColor($this->title.' '.$this->level, '0;36').PHP_EOL;
-        $output .= CLI::addColor($this->message, $color).PHP_EOL;
+        $output .= CLI::addColor($this->title . ' ' . $this->level, '0;36') . PHP_EOL;
+        $output .= CLI::addColor($this->message, $color) . PHP_EOL;
 
         echo $output;
     }

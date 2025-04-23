@@ -14,9 +14,9 @@ class Validator
      *
      * @return string Namespace
      */
-    final private static function getNameSpace($class)
+    private static function getNameSpace($class)
     {
-        return '\\Sparky7\\Property\\Rule\\Ru'.$class;
+        return '\\Sparky7\\Property\\Rule\\Ru' . $class;
     }
 
     /**
@@ -27,7 +27,7 @@ class Validator
      *
      * @return any Property value
      */
-    final public static function export($type, $value)
+    public static function export($type, $value)
     {
         $namespace = self::getNameSpace($type);
 
@@ -42,7 +42,7 @@ class Validator
      *
      * @return any Property value
      */
-    final public static function sanitize($type, $value)
+    public static function sanitize($type, $value)
     {
         $namespace = self::getNameSpace($type);
 
@@ -60,7 +60,7 @@ class Validator
      *
      * @return any Property value
      */
-    final public static function validate($type, $value, $required = false, $default = null, $use_default = true)
+    public static function validate($type, $value, $required = false, $default = null, $use_default = true)
     {
         $namespace = self::getNameSpace($type);
 

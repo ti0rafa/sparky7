@@ -20,7 +20,7 @@ abstract class Controller
     /**
      * Construct method.
      */
-    final public function __construct(Request $Request)
+    public function __construct(Request $Request)
     {
         $this->Request = $Request;
         $this->Session = new Constant();
@@ -43,7 +43,7 @@ abstract class Controller
      *
      * @return Any Parameter value
      */
-    final public function __get($key)
+    public function __get($key)
     {
         return $this->Request->getParam($key);
     }
@@ -53,7 +53,7 @@ abstract class Controller
      *
      * @return array Debug array
      */
-    final public function __debugInfo()
+    public function __debugInfo()
     {
         return [
             'Request' => $this->Request,
@@ -85,7 +85,7 @@ abstract class Controller
     /**
      * Load controller parameters.
      */
-    final private function load()
+    private function load()
     {
         $this->emit('before.load');
 
@@ -96,7 +96,7 @@ abstract class Controller
                 // Add it as a collection parameter
                 $this->Request->setParam($key, $Parameter->value, $Parameter->method);
             } catch (ExBadRequest $ExBadRequest) {
-                throw new ExBadRequest($ExBadRequest->getMessage().': '.$key);
+                throw new ExBadRequest($ExBadRequest->getMessage() . ': ' . $key);
             }
         }
 
@@ -110,7 +110,7 @@ abstract class Controller
      *
      * @return Parameter Parameter Object
      */
-    final public function getParamObject($key, Parameter $Parameter = null)
+    public function getParamObject($key, ?Parameter $Parameter = null)
     {
         /*
          * Grab parameter
@@ -149,7 +149,7 @@ abstract class Controller
      *
      * @return string Json response
      */
-    final public function run()
+    public function run()
     {
         $this->emit('before.exec');
 

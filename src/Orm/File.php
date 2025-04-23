@@ -2,9 +2,9 @@
 
 namespace Sparky7\Orm;
 
-use Sparky7\Event\Emitter;
 use MongoGridFS;
 use MongoId;
+use Sparky7\Event\Emitter;
 
 /**
  * File Class.
@@ -36,7 +36,7 @@ abstract class File
      * @param string $key   Key
      * @param string $value Value
      */
-    final public function __set($key, $value)
+    public function __set($key, $value)
     {
         $this->metadata[$key] = $value;
     }
@@ -49,7 +49,7 @@ abstract class File
      *
      * @return MongoId MongoId
      */
-    final public function save($content, MongoId $id_previous = null)
+    public function save($content, ?MongoId $id_previous = null)
     {
         /*
          * Remove previous file

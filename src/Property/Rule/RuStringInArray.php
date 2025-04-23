@@ -12,7 +12,7 @@ class RuStringInArray
     /**
      * Export value.
      */
-    final public static function export($value)
+    public static function export($value)
     {
         return self::sanitize($value);
     }
@@ -20,7 +20,7 @@ class RuStringInArray
     /**
      * Sanitize.
      */
-    final public static function sanitize($value)
+    public static function sanitize($value)
     {
         $collection = (is_array($value)) ? $value : explode(',', $value);
 
@@ -37,7 +37,7 @@ class RuStringInArray
     /**
      * Validate.
      */
-    final public static function validate($value = null, $required = false, $default = null, $use_default = true)
+    public static function validate($value = null, $required = false, $default = null, $use_default = true)
     {
         $default = self::sanitize($default);
         $value = self::sanitize($value);

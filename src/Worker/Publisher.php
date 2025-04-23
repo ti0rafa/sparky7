@@ -14,7 +14,7 @@ class Publisher
      *
      * @param Protocol $Protocol Protocol Object
      */
-    final public function __construct(Protocol $Protocol)
+    public function __construct(Protocol $Protocol)
     {
         $this->Protocol = $Protocol;
     }
@@ -27,7 +27,7 @@ class Publisher
      *
      * @return bool
      */
-    final public function publish($message, array $attributes = [])
+    public function publish($message, array $attributes = [])
     {
         return $this->Protocol->publish($message, $attributes);
     }

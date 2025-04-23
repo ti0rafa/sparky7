@@ -21,7 +21,7 @@ class OpenSSL
      * @param string $cipher Cipher
      * @param string $algo   PBKDF2 algorythm
      */
-    final public function __construct($cipher = 'AES-256-CBC', $algo = 'sha512')
+    public function __construct($cipher = 'AES-256-CBC', $algo = 'sha512')
     {
         $this->cipher = $cipher;
         $this->algo = $algo;
@@ -32,7 +32,7 @@ class OpenSSL
      *
      * @return int Key length
      */
-    final private function keyLength()
+    private function keyLength()
     {
         switch ($this->cipher) {
             case 'AES-256-CBC':
@@ -52,7 +52,7 @@ class OpenSSL
      *
      * @return string key
      */
-    final public function key($password, $salt, $iterations = 0)
+    public function key($password, $salt, $iterations = 0)
     {
         $this->key = bin2hex(hash_pbkdf2($this->algo, $password, $salt, $iterations, $this->keyLength(), true));
     }
@@ -62,7 +62,7 @@ class OpenSSL
      *
      * @return int Key length
      */
-    final private function ivLength()
+    private function ivLength()
     {
         switch ($this->cipher) {
             case 'AES-256-CBC':
@@ -82,7 +82,7 @@ class OpenSSL
      *
      * @return string key
      */
-    final public function iv($password, $salt, $iterations = 0)
+    public function iv($password, $salt, $iterations = 0)
     {
         $this->iv = bin2hex(hash_pbkdf2($this->algo, $password, $salt, $iterations, $this->ivLength(), true));
     }
@@ -94,7 +94,7 @@ class OpenSSL
      *
      * @return string Encrypted string
      */
-    final public function encrypt($string)
+    public function encrypt($string)
     {
         return openssl_encrypt($string, $this->cipher, hex2bin($this->key), 0, hex2bin($this->iv));
     }
@@ -106,7 +106,7 @@ class OpenSSL
      *
      * @return string Decrypted string
      */
-    final public function decrypt($string)
+    public function decrypt($string)
     {
         $data = openssl_decrypt($string, $this->cipher, hex2bin($this->key), 0, hex2bin($this->iv));
 

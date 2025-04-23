@@ -12,7 +12,7 @@ class RuBool
     /**
      * Export value.
      */
-    final public static function export($value)
+    public static function export($value)
     {
         return self::sanitize($value);
     }
@@ -20,22 +20,22 @@ class RuBool
     /**
      * Sanitize.
      */
-    final public static function sanitize($value)
+    public static function sanitize($value)
     {
         if (is_bool($value)) {
             return (int) $value;
-        } elseif (strtolower($value) === 'false' ||
-            strtolower($value) === 'off' ||
-            strtolower($value) === 'no' ||
-            $value === '0' ||
-            $value === 0
+        } elseif ('false' === strtolower($value) ||
+            'off' === strtolower($value) ||
+            'no' === strtolower($value) ||
+            '0' === $value ||
+            0 === $value
         ) {
             return 0;
-        } elseif (strtolower($value) === 'true' ||
-            strtolower($value) === 'on' ||
-            strtolower($value) === 'yes' ||
-            $value === '1' ||
-            $value === 1
+        } elseif ('true' === strtolower($value) ||
+            'on' === strtolower($value) ||
+            'yes' === strtolower($value) ||
+            '1' === $value ||
+            1 === $value
         ) {
             return 1;
         } else {
@@ -46,7 +46,7 @@ class RuBool
     /**
      * Validate.
      */
-    final public static function validate($value = null, $required = false, $default = null, $use_default = true)
+    public static function validate($value = null, $required = false, $default = null, $use_default = true)
     {
         $default = self::sanitize($default);
         $value = self::sanitize($value);

@@ -12,7 +12,7 @@ class RuFile
     /**
      * Export value.
      */
-    final public static function export($value)
+    public static function export($value)
     {
         return self::sanitize($value);
     }
@@ -20,13 +20,13 @@ class RuFile
     /**
      * Sanitize.
      */
-    final public static function sanitize($value)
+    public static function sanitize($value)
     {
         if (!is_array($value)) {
             return;
         }
 
-        if ($value['error'] !== 0) {
+        if (0 !== $value['error']) {
             return;
         }
 
@@ -36,7 +36,7 @@ class RuFile
     /**
      * Validate.
      */
-    final public static function validate($value = null, $required = false, $default = null, $use_default = true)
+    public static function validate($value = null, $required = false, $default = null, $use_default = true)
     {
         $default = self::sanitize($default);
         $value = self::sanitize($value);

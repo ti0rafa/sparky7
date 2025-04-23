@@ -18,7 +18,7 @@ class OrmException extends Exception
      * @param code       $code    Exception code
      * @param array|null $context Context
      */
-    public function __construct($message, $code, array $context = null)
+    public function __construct($message, $code, ?array $context = null)
     {
         parent::__construct($message, $code);
 
@@ -30,7 +30,7 @@ class OrmException extends Exception
      *
      * @return array Context
      */
-    final public function getContext()
+    public function getContext()
     {
         return $this->context;
     }

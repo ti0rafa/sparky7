@@ -14,7 +14,7 @@ class RuMongoDate
     /**
      * Export value.
      */
-    final public static function export($value)
+    public static function export($value)
     {
         $value = self::sanitize($value);
 
@@ -24,7 +24,7 @@ class RuMongoDate
     /**
      * Sanitize.
      */
-    final public static function sanitize($value)
+    public static function sanitize($value)
     {
         if ($value instanceof UTCDateTime) {
             return $value;
@@ -46,7 +46,7 @@ class RuMongoDate
     /**
      * Validate.
      */
-    final public static function validate($value = null, $required = false, $default = null, $use_default = true)
+    public static function validate($value = null, $required = false, $default = null, $use_default = true)
     {
         $default = self::sanitize($default);
         $value = self::sanitize($value);

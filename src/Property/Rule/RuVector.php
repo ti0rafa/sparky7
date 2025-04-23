@@ -13,7 +13,7 @@ class RuVector
     /**
      * Export value.
      */
-    final public static function export($value)
+    public static function export($value)
     {
         return self::sanitize($value);
     }
@@ -21,7 +21,7 @@ class RuVector
     /**
      * Sanitize.
      */
-    final public static function sanitize($value)
+    public static function sanitize($value)
     {
         if (is_array($value) || is_object($value)) {
             return (array) self::vectorify($value);
@@ -33,7 +33,7 @@ class RuVector
     /**
      * Validate.
      */
-    final public static function validate($value = null, $required = false, $default = null, $use_default = true)
+    public static function validate($value = null, $required = false, $default = null, $use_default = true)
     {
         $default = self::sanitize($default);
         $value = self::sanitize($value);
@@ -59,7 +59,7 @@ class RuVector
      *
      * @return array/object
      */
-    final public static function vectorify($data)
+    public static function vectorify($data)
     {
         if (!is_array($data) || 0 === count((array) $data)) {
             return $data;

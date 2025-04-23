@@ -14,7 +14,7 @@ class Constant
     /**
      * Constuct.
      */
-    final public function __construct()
+    public function __construct()
     {
         $this->collection = [];
     }
@@ -26,7 +26,7 @@ class Constant
      *
      * @return any Property value
      */
-    final public function __get($key)
+    public function __get($key)
     {
         return (isset($this->collection[$key])) ? $this->collection[$key] : null;
     }
@@ -37,10 +37,10 @@ class Constant
      * @param string $key   Property name
      * @param any    $value Property value
      */
-    final public function __set($key, $value)
+    public function __set($key, $value)
     {
         if (isset($this->collection[$key])) {
-            throw new Exception($key.' can\'t be modified');
+            throw new Exception($key . ' can\'t be modified');
         }
 
         $this->collection[$key] = $value;
@@ -53,7 +53,7 @@ class Constant
      *
      * @return bool
      */
-    final public function has($key)
+    public function has($key)
     {
         return isset($this->collection[$key]);
     }

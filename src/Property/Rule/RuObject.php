@@ -12,7 +12,7 @@ class RuObject
     /**
      * Export value.
      */
-    final public static function export($value)
+    public static function export($value)
     {
         return self::sanitize($value);
     }
@@ -20,15 +20,15 @@ class RuObject
     /**
      * Sanitize.
      */
-    final public static function sanitize($value)
+    public static function sanitize($value)
     {
-        return ((is_array($value) || is_object($value))) ? (object) $value : null;
+        return (is_array($value) || is_object($value)) ? (object) $value : null;
     }
 
     /**
      * Validate.
      */
-    final public static function validate($value = null, $required = false, $default = null, $use_default = true)
+    public static function validate($value = null, $required = false, $default = null, $use_default = true)
     {
         $default = self::sanitize($default);
         $value = self::sanitize($value);

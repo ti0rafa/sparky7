@@ -12,7 +12,7 @@ class Timer
     /**
      * Starts the timer.
      */
-    final public function start()
+    public function start()
     {
         $this->start = microtime(true);
     }
@@ -22,7 +22,7 @@ class Timer
      *
      * @return array Returns the elapse time in minutes, seconds and microseconds
      */
-    final public function elapsed()
+    public function elapsed()
     {
         return $this->returnTimer(microtime(true) - $this->start);
     }
@@ -34,16 +34,16 @@ class Timer
      *
      * @return array Returns the elapse time in minutes, seconds and microseconds
      */
-    final private function returnTimer($milliseconds)
+    private function returnTimer($milliseconds)
     {
         $timer = (int) round($milliseconds * 1000);
 
         if ($timer < 1000) {
-            return $timer.' ms';
+            return $timer . ' ms';
         } elseif ($timer < 60000) {
-            return round($timer / 1000, 2).' s';
+            return round($timer / 1000, 2) . ' s';
         } else {
-            return round($timer / 60000, 2).' m';
+            return round($timer / 60000, 2) . ' m';
         }
     }
 }

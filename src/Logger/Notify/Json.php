@@ -17,7 +17,7 @@ class Json extends LoggerNotify
      *
      * @param string $code HTTP status code
      */
-    final public function __construct($code)
+    public function __construct($code)
     {
         $this->code = $code;
     }
@@ -25,7 +25,7 @@ class Json extends LoggerNotify
     /**
      * Sends log notification.
      */
-    final public function send()
+    public function send()
     {
         $APIResponse = new APIResponse();
         $APIResponse->rid = $this->pid;

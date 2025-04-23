@@ -2,10 +2,10 @@
 
 namespace Sparky7\Logger\Notify;
 
-use Sparky7\Logger\LoggerNotify;
 use DateTime;
 use DateTimeZone;
 use PHPMailer;
+use Sparky7\Logger\LoggerNotify;
 
 /**
  * Email handler.
@@ -20,7 +20,7 @@ class Email extends LoggerNotify
      * @param string    $title     Title
      * @param PHPMailer $PHPMailer PHPMailer instance
      */
-    final public function __construct($title, PHPMailer $PHPMailer)
+    public function __construct($title, PHPMailer $PHPMailer)
     {
         $this->PHPMailer = $PHPMailer;
         $this->title = $title;
@@ -29,7 +29,7 @@ class Email extends LoggerNotify
     /**
      * Sends log notification.
      */
-    final public function send()
+    public function send()
     {
         $this->PHPMailer->Subject = $this->message;
         $this->PHPMailer->Body = $this->format();
@@ -40,7 +40,7 @@ class Email extends LoggerNotify
     /**
      * Format log data.
      */
-    final public function format()
+    public function format()
     {
         switch ($this->level) {
             case 'notice':
@@ -76,25 +76,25 @@ class Email extends LoggerNotify
             </head>
             <body style="font-family: Arial,sans-serif; font-size: 14px; color: #333; background-color: #fff;">
                 <h1 style="margin: .67em 0; font-size: 36px; font-weight: 500; line-height: 1.1; color: inherit;">
-                    '.$this->title
-                    .' <span style="'.$style2.'; color: #fff;  border-radius: 8px; padding: 7px;">'
-                    .ucfirst(strtolower($this->level)).'</span>
+                    ' . $this->title .
+                    ' <span style="' . $style2 . '; color: #fff;  border-radius: 8px; padding: 7px;">' .
+                    ucfirst(strtolower($this->level)) . '</span>
                 </h1>
-                <small>Date: <b>'.$dateUTC->format($format).'</b></small><br>
-                <small>Date: <b>'.$dateCST->format($format).'</b></small><br>
-                <small>Date: <b>'.$datePST->format($format).'</b></small><br>
+                <small>Date: <b>' . $dateUTC->format($format) . '</b></small><br>
+                <small>Date: <b>' . $dateCST->format($format) . '</b></small><br>
+                <small>Date: <b>' . $datePST->format($format) . '</b></small><br>
                 <hr style="border: 0; height: 0;
                     border-top: 1px solid rgba(0, 0, 0, 0.1);
                     border-bottom: 1px solid rgba(255, 255, 255, 0.3);">
-                <div style="'.$style1.'; font-size: 1.2em; font-weight: 200; border-radius: 4px; padding: 18px;">
-                    <i>'.$this->message.'</i>
+                <div style="' . $style1 . '; font-size: 1.2em; font-weight: 200; border-radius: 4px; padding: 18px;">
+                    <i>' . $this->message . '</i>
                 </div>
                 <hr style="border: 0; height: 0;
                     border-top: 1px solid rgba(0, 0, 0, 0.1);
                     border-bottom: 1px solid rgba(255, 255, 255, 0.3);">
                 <p>
-                    '.$this->formatContext(['tags' => $this->tags], 'panel-info').'
-                    '.$this->formatContext($this->context).'
+                    ' . $this->formatContext(['tags' => $this->tags], 'panel-info') . '
+                    ' . $this->formatContext($this->context) . '
                 </p>
             </body>
             </html>
@@ -108,7 +108,7 @@ class Email extends LoggerNotify
      *
      * @return string Formatted context
      */
-    final private function formatContext(array $context)
+    private function formatContext(array $context)
     {
         $panel = '';
         foreach ($context as $key => $value) {
@@ -124,10 +124,10 @@ class Email extends LoggerNotify
 
                 $panel .= '<table width="100%" cellpadding="10" cellspacing="0">';
                 $panel .= '<thead>';
-                $panel .= '<th style="'.$style.'; font-size: 18px; font-weight: 500; padding: 8px;" colspan="2">';
-                $panel .= strtoupper($key).'</th>';
+                $panel .= '<th style="' . $style . '; font-size: 18px; font-weight: 500; padding: 8px;" colspan="2">';
+                $panel .= strtoupper($key) . '</th>';
                 $panel .= '</thead>';
-                $panel .= '<tbody>'.self::formatValues($value).'</tbody>';
+                $panel .= '<tbody>' . self::formatValues($value) . '</tbody>';
                 $panel .= '</table>';
                 $panel .= '<hr style="border: 0; height: 0; border-top: 1px solid rgba(0, 0, 0, 0.1);';
                 $panel .= ' border-bottom: 1px solid rgba(255, 255, 255, 0.3);">';
@@ -144,7 +144,7 @@ class Email extends LoggerNotify
      *
      * @return string Formatted values
      */
-    final private function formatValues($value)
+    private function formatValues($value)
     {
         if (!is_array($value)) {
             return $value;
@@ -154,13 +154,13 @@ class Email extends LoggerNotify
         foreach ($value as $key => $value2) {
             $style = 'border-top: 1px solid #ddd;';
             if (is_array($value2) || is_object($value2)) {
-                $tbody .= '<tr><td width="180" style="'.$style.'">';
-                $tbody .= ucfirst(strtolower($key)).'</td><td style="'.$style.'"><pre>';
-                $tbody .= json_encode($value2, JSON_PRETTY_PRINT).'</pre></td></tr>';
+                $tbody .= '<tr><td width="180" style="' . $style . '">';
+                $tbody .= ucfirst(strtolower($key)) . '</td><td style="' . $style . '"><pre>';
+                $tbody .= json_encode($value2, JSON_PRETTY_PRINT) . '</pre></td></tr>';
             } else {
-                $tbody .= '<tr><td width="180" style="'.$style.'">';
-                $tbody .= ucfirst(strtolower($key)).'</td><td style="'.$style.'">';
-                $tbody .= '<samp>'.$value2.'</samp></td></tr>';
+                $tbody .= '<tr><td width="180" style="' . $style . '">';
+                $tbody .= ucfirst(strtolower($key)) . '</td><td style="' . $style . '">';
+                $tbody .= '<samp>' . $value2 . '</samp></td></tr>';
             }
         }
 

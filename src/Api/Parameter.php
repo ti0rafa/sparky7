@@ -21,7 +21,7 @@ class Parameter
      * @param string $type    Property type
      * @param any    $default Default value
      */
-    final public function __construct($type, $default = null)
+    public function __construct($type, $default = null)
     {
         $this->default = $default;
         $this->method = 'unset';
@@ -37,7 +37,7 @@ class Parameter
      *
      * @return string Parameter value
      */
-    final public function __get($key)
+    public function __get($key)
     {
         return (isset($this->{$key})) ? $this->{$key} : null;
     }
@@ -47,7 +47,7 @@ class Parameter
      *
      * @return array Debug array
      */
-    final public function __debugInfo()
+    public function __debugInfo()
     {
         return [
             'method' => $this->method,
@@ -62,7 +62,7 @@ class Parameter
      * @param any    $value  Property value
      * @param string $method Set method
      */
-    final public function set($value, $method = 'set')
+    public function set($value, $method = 'set')
     {
         $this->value = $value;
         $this->method = $method;
@@ -73,7 +73,7 @@ class Parameter
     /**
      * Set property as required.
      */
-    final public function required()
+    public function required()
     {
         $this->required = !$this->required;
 
@@ -83,7 +83,7 @@ class Parameter
     /**
      * Sanitize property.
      */
-    final public function sanitize()
+    public function sanitize()
     {
         $this->value = Validator::sanitize($this->type, $this->value);
 
@@ -93,7 +93,7 @@ class Parameter
     /**
      * Validate property.
      */
-    final public function validate()
+    public function validate()
     {
         $this->value = Validator::validate($this->type, $this->value, $this->required, $this->default, true);
 

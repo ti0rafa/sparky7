@@ -29,7 +29,7 @@ class MongoDB
      *
      * @return MongoId MongoId
      */
-    final public function insert($content, array $metadata = null)
+    public function insert($content, ?array $metadata = null)
     {
         $stream = fopen('php://memory', 'r+');
         fwrite($stream, zlib_encode($content, ZLIB_ENCODING_RAW, 9));
@@ -49,7 +49,7 @@ class MongoDB
      *
      * @return [type] [description]
      */
-    final public function delete(MongoId $_id)
+    public function delete(MongoId $_id)
     {
         $this->MongoGridFS->delete($id_previous);
     }

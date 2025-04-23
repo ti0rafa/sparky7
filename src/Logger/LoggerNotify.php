@@ -26,7 +26,7 @@ abstract class LoggerNotify
     /**
      * Clear previous values.
      */
-    final public function clear()
+    public function clear()
     {
         $this->count = 0;
         $this->level = null;

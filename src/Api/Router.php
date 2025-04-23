@@ -2,10 +2,10 @@
 
 namespace Sparky7\Api;
 
+use Closure;
 use Sparky7\Api\Response\APIResponse;
 use Sparky7\Error\Exception\ExBadRequest;
 use Sparky7\Event\Emitter;
-use Closure;
 
 /**
  * Router class.
@@ -23,7 +23,7 @@ class Router
     /**
      * Construct method.
      */
-    final public function __construct()
+    public function __construct()
     {
         $this->Request = new Request();
 
@@ -39,7 +39,7 @@ class Router
      *
      * @return string Parameter value
      */
-    final public function __get($key)
+    public function __get($key)
     {
         return (isset($this->{$key})) ? $this->{$key} : null;
     }
@@ -51,7 +51,7 @@ class Router
      * @param string $uri     End point
      * @param string $closure Callback
      */
-    final private function addRoute($method, $uri, Closure $closure)
+    private function addRoute($method, $uri, Closure $closure)
     {
         $uri = ltrim($uri, '/');
         $arr = explode('/', $uri);
@@ -60,20 +60,20 @@ class Router
 
         foreach ($arr as $key => $value) {
             // Adds the / to the routes
-            $value = '/'.$value;
+            $value = '/' . $value;
 
             if (($key + 1) < $size) {
-                if (!isset(${'cursor'.$key}[$value])) {
-                    ${'cursor'.$key}[$value] = [
+                if (!isset(${'cursor' . $key}[$value])) {
+                    ${'cursor' . $key}[$value] = [
                         'method' => [],
                         'children' => null,
                         'url' => $uri,
                     ];
                 }
 
-                ${'cursor'.($key + 1)} = &${'cursor'.$key}[$value]['children'];
+                ${'cursor' . ($key + 1)} = &${'cursor' . $key}[$value]['children'];
             } else {
-                ${'cursor'.$key}[$value]['method'][strtoupper($method)] = [
+                ${'cursor' . $key}[$value]['method'][strtoupper($method)] = [
                     'closure' => $closure,
                     'uri' => $uri,
                 ];
@@ -90,7 +90,7 @@ class Router
      *
      * @return array Route
      */
-    final private function parseRouteMatched(array $match)
+    private function parseRouteMatched(array $match)
     {
         $methods = [
             $this->Request->method,
@@ -112,7 +112,7 @@ class Router
                 if (isset($value['method'][$method])) {
                     // Add variables
                     foreach (explode('/', $value['method'][$method]['uri']) as $key2 => $value2) {
-                        if (strpos($value2, ':') === 0) {
+                        if (0 === strpos($value2, ':')) {
                             $value2 = substr($value2, 1, strlen($value2));
                             $this->Request->setParam($value2, $this->Request->uri[$key2], 'URL');
                         }
@@ -131,13 +131,13 @@ class Router
      *
      * @return any False if route didn't match or a Route object if found
      */
-    final private function searchRoute()
+    private function searchRoute()
     {
         // Searches in custom routes
         $closure = null;
         $routes = $this->routes;
 
-        if (count($this->Request->uri) === 0) {
+        if (0 === count($this->Request->uri)) {
             $request = [' '];
             $size = 1;
         } else {
@@ -153,19 +153,19 @@ class Router
                 $route['w'] = 0;
 
                 // Exact folder match
-                if ('/'.$req_dir === $route_dir) {
+                if ('/' . $req_dir === $route_dir) {
                     $route['w'] = 1;
                     $match[] = $route;
                 }
 
                 // Variable match
-                if (strpos($route_dir, '/:') === 0) {
+                if (0 === strpos($route_dir, '/:')) {
                     $route['w'] = 0.5;
                     $match[] = $route;
                 }
 
                 // Wildcard
-                if (strpos($route_dir, '/**') === 0) {
+                if (0 === strpos($route_dir, '/**')) {
                     $route['w'] = 0.1;
                     $match[] = $route;
 
@@ -195,7 +195,7 @@ class Router
      * @param string $replace Search for
      * @param string $with    Replace with
      */
-    final public function replaceURL($replace, $with)
+    public function replaceURL($replace, $with)
     {
         $this->Request->replaceURL($replace, $with);
     }
@@ -206,7 +206,7 @@ class Router
      * @param string $uri     End point
      * @param string $closure Callback
      */
-    final public function any($uri, Closure $closure)
+    public function any($uri, Closure $closure)
     {
         $this->addRoute(__FUNCTION__, $uri, $closure);
     }
@@ -217,7 +217,7 @@ class Router
      * @param string $uri     End point
      * @param string $closure Method callback
      */
-    final public function get($uri, Closure $closure)
+    public function get($uri, Closure $closure)
     {
         $this->addRoute(__FUNCTION__, $uri, $closure);
     }
@@ -228,7 +228,7 @@ class Router
      * @param string $uri     End point
      * @param string $closure Method callback
      */
-    final public function post($uri, Closure $closure)
+    public function post($uri, Closure $closure)
     {
         $this->addRoute(__FUNCTION__, $uri, $closure);
     }
@@ -239,7 +239,7 @@ class Router
      * @param string $uri     End point
      * @param string $closure Method callback
      */
-    final public function put($uri, closure $closure)
+    public function put($uri, Closure $closure)
     {
         $this->addRoute(__FUNCTION__, $uri, $closure);
     }
@@ -250,7 +250,7 @@ class Router
      * @param string $uri     End point
      * @param string $closure Method callback
      */
-    final public function delete($uri, Closure $closure)
+    public function delete($uri, Closure $closure)
     {
         $this->addRoute(__FUNCTION__, $uri, $closure);
     }
@@ -260,7 +260,7 @@ class Router
      *
      * @param string $closure Method callback
      */
-    final public function notFound(Closure $closure)
+    public function notFound(Closure $closure)
     {
         $this->not_found = $closure;
     }
@@ -270,7 +270,7 @@ class Router
      *
      * @return APIResponse
      */
-    final public function preFlight()
+    public function preFlight()
     {
         return function () {
             $APIResponse = new APIResponse();
@@ -284,7 +284,7 @@ class Router
     /**
      * Executes matching route with requested url, and tries to executes its callback.
      */
-    final public function run()
+    public function run()
     {
         $this->emit('before.run', [$this->Request]);
 
