@@ -22,7 +22,9 @@ class RuBool
      */
     public static function sanitize($value)
     {
-        if (is_bool($value)) {
+        if (null === $value) {
+            return null;
+        } elseif (is_bool($value)) {
             return (int) $value;
         } elseif ('false' === strtolower($value) ||
             'off' === strtolower($value) ||
@@ -39,7 +41,7 @@ class RuBool
         ) {
             return 1;
         } else {
-            return;
+            return null;
         }
     }
 

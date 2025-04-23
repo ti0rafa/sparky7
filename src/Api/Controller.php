@@ -17,6 +17,8 @@ abstract class Controller
     public $Request;
     public $Session;
 
+    public $response;
+
     /**
      * Construct method.
      */

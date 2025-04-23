@@ -424,6 +424,9 @@ class MongoDB
         }
 
         foreach ($sort as $key => $value) {
+            if (null === $value) {
+                continue;
+            }
             $option = ('-' === substr($value, 0, 1)) ? -1 : 1;
             $key = trim(str_replace('-', '', $value));
 
