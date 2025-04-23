@@ -8,6 +8,7 @@ namespace Sparky7\Logger;
 abstract class LoggerNotify
 {
     public $pid;
+    public $app;
     public $title;
     public $description;
     public $tags;

@@ -100,9 +100,11 @@ class Request
 
         $request = (isset($_SERVER['HTTP_CONTENT_TYPE'])) ? $_SERVER['HTTP_CONTENT_TYPE'] : null;
 
-        foreach ($content_types as $content_type) {
-            if (false !== strpos($request, $content_type)) {
-                $this->content_type = $content_type;
+        if (null !== $request) {
+            foreach ($content_types as $content_type) {
+                if (false !== strpos($request, $content_type)) {
+                    $this->content_type = $content_type;
+                }
             }
         }
     }

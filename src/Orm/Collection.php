@@ -3,6 +3,7 @@
 namespace Sparky7\Orm;
 
 use Exception;
+use Iterator;
 use OuterIterator;
 use Sparky7\Orm\Qb\MongoDB;
 
@@ -97,7 +98,7 @@ abstract class Collection implements OuterIterator
      *
      * @return array Collection data
      */
-    public function toArray()
+    public function toArray(): array
     {
         $collection = [];
 
@@ -125,16 +126,16 @@ abstract class Collection implements OuterIterator
     /**
      * Get the current value.
      */
-    public function current()
+    public function current(): mixed
     {
         if (is_null($this->Iterator)) {
-            return;
+            return null;
         }
 
         $data = $this->Iterator->current();
 
         if (is_null($data)) {
-            return;
+            return null;
         }
 
         return new $this->entity($this->MongoDB->{$this->collection}, (array) $data);
@@ -145,7 +146,7 @@ abstract class Collection implements OuterIterator
      *
      * @return int Iterator key
      */
-    public function key()
+    public function key(): mixed
     {
         return $this->Iterator->key();
     }
@@ -155,9 +156,9 @@ abstract class Collection implements OuterIterator
      *
      * @return bool
      */
-    public function next()
+    public function next(): void
     {
-        return $this->Iterator->next();
+        $this->Iterator->next();
     }
 
     /**
@@ -165,17 +166,15 @@ abstract class Collection implements OuterIterator
      *
      * @return bool
      */
-    public function rewind()
+    public function rewind(): void
     {
-        return $this->Iterator->rewind();
+        $this->Iterator->rewind();
     }
 
     /**
      * Check to see if current key is valid.
-     *
-     * @return bool
      */
-    public function valid()
+    public function valid(): bool
     {
         return $this->Iterator->valid();
     }
@@ -183,9 +182,9 @@ abstract class Collection implements OuterIterator
     /**
      * Get Inner Iterator.
      *
-     * @return [type] Iterator
+     * @return Iterator Iterator
      */
-    public function getInnerIterator()
+    public function getInnerIterator(): ?Iterator
     {
         return $this->Iterator;
     }
