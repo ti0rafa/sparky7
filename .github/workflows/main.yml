@@ -9,9 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Update Packagist
-        uses: mnavarrocarter/packagist-update@v1.0
+        uses: hotaruma/packagist-sync@v1.0.1
         with:
-          username: "ti0rafa"
-          api_token: ${{ secrets.PACKAGIST_API_TOKEN }}
-          package_name: "tiorafa/sparky7"
-          domain: "packagist.org"
+          api-token: ${{ secrets.PACKAGIST_API_TOKEN }}
+          packagist-username: "ti0rafa"
+          package-name: "tiorafa/sparky7"
+          packagist-domain: "packagist.org"
