@@ -4,7 +4,7 @@ namespace Sparky7\Logger\Notify;
 
 use DateTime;
 use DateTimeZone;
-use PHPMailer;
+use PHPMailer\PHPMailer\PHPMailer;
 use Sparky7\Logger\LoggerNotify;
 
 /**
