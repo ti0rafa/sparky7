@@ -1,3 +1,5 @@
+name: Update Packagist Workflow
+
 on:
   push:
     branches: ['master']
