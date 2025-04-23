@@ -1,16 +1,9 @@
+---
 - name: Packagist Publish
-  # You may pin to the exact commit or the version.
-  # uses: wscourge/gha-packagist-publish@a16eb68dbf761af729985939e41e81b59ac37da2
   uses: wscourge/gha-packagist-publish@1.0.2
   with:
-    # The packagist domain to call.
-    domain: # optional, default is packagist.org
-    # Your packagist username
+    domain: null
     username: ti0rafa
-    # Your packagist api token
     api_token: fb658f8e9340ceaa12d20d2448de27ebed55e7e9
-    # Your package name (vendor/name). If not present, it takes it from composer.json
-    package_name: # optional, default is 
-    # The base url of your package. Defaults to https://packagist.org/packages or set to https://github.com for github packages.
-    package_base_url: # optional, default is https://packagist.org/packages
-          
+    package_name: null
+    package_base_url: null
